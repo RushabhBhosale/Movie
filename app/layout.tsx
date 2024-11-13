@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+
+// Google Fonts (Cinematic and Modern)
+import { Poppins, Cinzel } from "next/font/google";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import Navbar from "@/components/app-navbar";
 import "./globals.css";
 
 // Custom local fonts
@@ -13,11 +19,6 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
-
-// Google Fonts (Cinematic and Modern)
-import { Poppins, Cinzel } from "next/font/google";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
 
 // Load Poppins and Cinzel fonts
 const poppins = Poppins({
@@ -55,9 +56,9 @@ export default function RootLayout({
       >
         <SidebarProvider>
           <AppSidebar />
-          <main>
-            <SidebarTrigger />
-            {children}
+          <main className="w-full">
+            <Navbar />
+            <div>{children} </div>
           </main>
         </SidebarProvider>
       </body>
