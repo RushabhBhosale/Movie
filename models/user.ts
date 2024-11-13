@@ -1,5 +1,10 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
+export interface LoginInterface {
+  username: string;
+  password: string;
+}
+
 export interface IUser extends Document {
   username: string;
   email: string;

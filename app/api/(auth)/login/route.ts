@@ -1,23 +1,14 @@
 import connectDB from "@/lib/db";
-import User from "@/models/user";
+import User, { LoginInterface } from "@/models/user";
 import { errorResponse, successResponse } from "@/utils/response";
 import bcrypt from "bcryptjs";
-import { NextApiRequest } from "next";
-
-interface LoginRequestBody {
-  username: string;
-  password: string;
-}
 
 export async function POST(req: Request) {
   await connectDB();
 
   try {
-    console.log("Request Body:", req.body);
     const body = await req.json();
-    const { username, password }: LoginRequestBody = body;
-
-    console.log("first login", username, password);
+    const { username, password }: LoginInterface = body;
 
     if (!username || !password) {
       return errorResponse({

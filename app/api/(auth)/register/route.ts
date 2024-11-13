@@ -3,19 +3,12 @@ import User, { IUser } from "@/models/user";
 import { errorResponse, successResponse } from "@/utils/response";
 import bcrypt from "bcryptjs";
 
-interface RegisterRequestBody {
-  username: string;
-  email: string;
-  password: string;
-}
-
 export async function POST(req: Request, res: Response) {
   await connectDB();
 
   try {
     // Parse the request body only once
-    const { username, email, password } =
-      (await req.json()) as RegisterRequestBody;
+    const { username, email, password } = (await req.json()) as IUser;
 
     // Validate required fields
     if (!username || !email || !password) {
