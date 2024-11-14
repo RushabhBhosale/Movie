@@ -1,4 +1,4 @@
-import { fetchTVDetails } from "@/app/services/tv.service";
+import { fetchTVDetails } from "@/app/api/(services)/tv.service";
 import { NextRequest } from "next/server";
 import { errorResponse, successResponse } from "@/utils/response";
 

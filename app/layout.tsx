@@ -43,6 +43,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log("Inside Root Layout - This should show for non-auth pages");
   return (
     <html lang="en">
       <head>
@@ -54,13 +55,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${cinzel.variable} antialiased`}
       >
-        <SidebarProvider>
-          <AppSidebar />
-          <main className="w-full">
-            <Navbar />
-            <div>{children} </div>
-          </main>
-        </SidebarProvider>
+        <main className="w-full">
+          <div>{children} </div>
+        </main>
       </body>
     </html>
   );

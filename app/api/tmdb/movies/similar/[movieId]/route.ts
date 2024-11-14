@@ -1,4 +1,4 @@
-import { fetchSimilarMovies } from "@/app/services/movie.service";
+import { fetchSimilarMovies } from "@/app/api/(services)/movie.service";
 import { errorResponse, successResponse } from "@/utils/response";
 import { NextRequest } from "next/server";
 

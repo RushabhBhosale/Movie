@@ -1,7 +1,7 @@
-import {} from "@/app/services/tv.service";
+import {} from "@/app/api/(services)/tv.service";
 import { NextRequest } from "next/server";
 import { errorResponse, successResponse } from "@/utils/response";
-import { fetchLatestMovies } from "@/app/services/movie.service";
+import { fetchLatestMovies } from "@/app/api/(services)/movie.service";
 
 export async function GET(req: NextRequest) {
   try {

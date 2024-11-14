@@ -1,4 +1,4 @@
-import { fetchUpcomingMovies } from "@/app/services/movie.service";
+import { fetchUpcomingMovies } from "@/app/api/(services)/movie.service";
 import { errorResponse, successResponse } from "@/utils/response";
 
 export async function GET() {

@@ -1,5 +1,5 @@
-import {} from "@/app/services/movie.service";
-import { fetchPopularTV } from "@/app/services/tv.service";
+import {} from "@/app/api/(services)/movie.service";
+import { fetchPopularTV } from "@/app/api/(services)/tv.service";
 import { errorResponse, successResponse } from "@/utils/response";
 
 export async function GET() {
