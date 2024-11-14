@@ -21,3 +21,25 @@ export interface Movie {
   vote_average: number;
   vote_count: number;
 }
+
+export interface Review {
+  id: string;
+  author: string;
+  author_details: {
+    name: string;
+    username: string;
+    avatar_path: string | null;
+    rating: number | null;
+  };
+  content: string;
+  created_at: string; // Date as an ISO string
+  updated_at: string; // Date as an ISO string
+  url: string; // Link to the review on TMDb
+}
+
+export interface ReviewListResponse {
+  page: number;
+  results: Review[]; // Array of Review objects
+  total_pages: number;
+  total_results: number;
+}

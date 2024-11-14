@@ -1,5 +1,5 @@
 import { tmdbClient } from "@/lib/tmdb";
-import { MoviesListResponse } from "@/types/tmdb";
+import { MoviesListResponse, ReviewListResponse } from "@/types/tmdb";
 
 // Fetch popular TV shows
 export const fetchPopularTV = async (): Promise<MoviesListResponse> => {
@@ -30,43 +30,49 @@ export const fetchTopRatedTV = async (): Promise<MoviesListResponse> => {
 };
 
 // Fetch On the air TV shows (if available)
-export const fetchOnTheAir = async () => {
+export const fetchOnTheAir = async (): Promise<MoviesListResponse> => {
   const { data } = await tmdbClient.get("tv/on_the_air");
   return data;
 };
 
 // Fetch airing today TV shows
-export const fetchAiringToday = async () => {
+export const fetchAiringToday = async (): Promise<MoviesListResponse> => {
   const { data } = await tmdbClient.get("tv/airing_today");
   return data;
 };
 
 // Fetch TV shows that are currently airing
-export const fetchAiringNowTV = async () => {
+export const fetchAiringNowTV = async (): Promise<MoviesListResponse> => {
   const { data } = await tmdbClient.get("tv/airing_today");
   return data;
 };
 
 // Fetch TV shows that are currently latest
-export const fetchLatestTV = async () => {
+export const fetchLatestTV = async (): Promise<MoviesListResponse> => {
   const { data } = await tmdbClient.get("tv/latest");
   return data;
 };
 
 // Fetch similar TV shows to a specific TV show by ID
-export const fetchSimilarTV = async (tvId: number) => {
+export const fetchSimilarTV = async (
+  tvId: number
+): Promise<MoviesListResponse> => {
   const { data } = await tmdbClient.get(`tv/${tvId}/similar`);
   return data;
 };
 
 // Fetch recommendations for a specific TV show by ID
-export const fetchRecommendedTV = async (tvId: number) => {
+export const fetchRecommendedTV = async (
+  tvId: number
+): Promise<MoviesListResponse> => {
   const { data } = await tmdbClient.get(`tv/${tvId}/recommendations`);
   return data;
 };
 
 // Fetch reviews for a specific TV show by ID
-export const fetchTVReviews = async (tvId: number) => {
+export const fetchTVReviews = async (
+  tvId: number
+): Promise<ReviewListResponse> => {
   const { data } = await tmdbClient.get(`tv/${tvId}/reviews`);
   return data;
 };

@@ -1,5 +1,5 @@
 import { tmdbClient } from "@/lib/tmdb";
-import { MoviesListResponse } from "@/types/tmdb";
+import { Movie, MoviesListResponse, ReviewListResponse } from "@/types/tmdb";
 
 export const fetchPopularMovies = async (): Promise<MoviesListResponse> => {
   const { data } = await tmdbClient.get("movie/popular");
@@ -13,9 +13,7 @@ export const fetchTrendingMovies = async (
   return data;
 };
 
-export const fetchMovieDetails = async (
-  movieId: number
-): Promise<MoviesListResponse> => {
+export const fetchMovieDetails = async (movieId: number): Promise<Movie> => {
   const { data } = await tmdbClient.get(`movie/${movieId}`);
   return data;
 };
@@ -25,32 +23,38 @@ export const fetchTopRatedMovies = async (): Promise<MoviesListResponse> => {
   return data;
 };
 
-export const fetchLatestMovies = async () => {
+export const fetchLatestMovies = async (): Promise<MoviesListResponse> => {
   const { data } = await tmdbClient.get("movie/latest");
   return data;
 };
 
-export const fetchUpcomingMovies = async () => {
+export const fetchUpcomingMovies = async (): Promise<MoviesListResponse> => {
   const { data } = await tmdbClient.get("movie/upcoming");
   return data;
 };
 
-export const fetchMoviesPlayingNow = async () => {
+export const fetchMoviesPlayingNow = async (): Promise<MoviesListResponse> => {
   const { data } = await tmdbClient.get("movie/now_playing");
   return data;
 };
 
-export const fetchSimilarMovies = async (movieId: number) => {
+export const fetchSimilarMovies = async (
+  movieId: number
+): Promise<MoviesListResponse> => {
   const { data } = await tmdbClient.get(`movie/${movieId}/similar`);
   return data;
 };
 
-export const fetchRecommendedMovies = async (movieId: number) => {
+export const fetchRecommendedMovies = async (
+  movieId: number
+): Promise<MoviesListResponse> => {
   const { data } = await tmdbClient.get(`movie/${movieId}/recommendations`);
   return data;
 };
 
-export const fetchReviews = async (movieId: number) => {
+export const fetchReviews = async (
+  movieId: number
+): Promise<ReviewListResponse> => {
   const { data } = await tmdbClient.get(`movie/${movieId}/reviews`);
   return data;
 };
