@@ -15,7 +15,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log("Inside Root Layout - This should show for non-auth pages");
   return (
     <SidebarProvider>
       <AppSidebar />

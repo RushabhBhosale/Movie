@@ -20,6 +20,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -56,13 +57,19 @@ const items = [
 export function AppSidebar() {
   const pathname = usePathname();
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar variant="inset">
       <SidebarHeader title="Movie">
         <SidebarMenuButton asChild>
-          <a href="/" className="py-7">
-            <Clapperboard />
-            <span>Movie Flix</span>
-          </a>
+          <div className="flex items-center justify-between">
+            <a
+              href="/"
+              className="py-7 flex gap-3 justify-between items-center"
+            >
+              <Clapperboard className="size-5" />
+              <span className="text-lg">Movie Flix</span>
+            </a>
+            <SidebarTrigger />
+          </div>
         </SidebarMenuButton>
       </SidebarHeader>
       <SidebarSeparator />

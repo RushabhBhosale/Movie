@@ -44,8 +44,6 @@ export async function POST(req: Request) {
       username: user.username,
     });
 
-    saveToken(token);
-
     return successResponse({
       status: 200,
       message: "Login successfully",

@@ -1,144 +1,199 @@
 "use client";
-import React, { useState } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 
-export default function Login() {
-  // State to store form data
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, FormEvent, ChangeEvent } from "react";
+import {
+  userLoginSchema,
+  userSignUpSchema,
+  LoginInputState,
+  SignupInputState,
+} from "@/schema/userSchema";
+import { loginUser, registerUser } from "@/app/services/auth.service";
+import { saveToken } from "@/utils/token";
+
+export default function AuthTabs() {
+  const [loginInput, setLoginInput] = useState<LoginInputState>({
+    username: "",
+    password: "",
+  });
+  const [signupInput, setSignupInput] = useState<SignupInputState>({
+    username: "",
     email: "",
     password: "",
-    confirmPassword: "",
   });
+  const [loginErrors, setLoginErrors] = useState<Partial<LoginInputState>>({});
+  const [signupErrors, setSignupErrors] = useState<Partial<SignupInputState>>(
+    {}
+  );
 
-  // State to track if passwords match
-  const [isPasswordMatch, setIsPasswordMatch] = useState(true);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
-
-    // Check if password fields match
-    if (id === "password" || id === "confirmPassword") {
-      setIsPasswordMatch(
-        value ===
-          (id === "password" ? formData.confirmPassword : formData.password)
-      );
+  // Handle input change for both forms
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    form: "login" | "signup"
+  ) => {
+    const { name, value } = e.target;
+    if (form === "login") {
+      setLoginInput({ ...loginInput, [name]: value });
+    } else {
+      setSignupInput({ ...signupInput, [name]: value });
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // Handle login form submission with validation
+  const handleLoginSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted with data:", formData);
+    const result = userLoginSchema.safeParse(loginInput);
+    if (!result.success) {
+      setLoginErrors(
+        result.error.formErrors.fieldErrors as Partial<LoginInputState>
+      );
+    } else {
+      setLoginErrors({});
+      const res = await loginUser(loginInput);
+      if (res) {
+        saveToken(res.token);
+      }
+    }
+  };
+
+  // Handle sign-up form submission with validation
+  const handleSignupSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    const result = userSignUpSchema.safeParse(signupInput);
+    if (!result.success) {
+      setSignupErrors(
+        result.error.formErrors.fieldErrors as Partial<SignupInputState>
+      );
+    } else {
+      setSignupErrors({});
+      const res = await registerUser(signupInput);
+    }
   };
 
   return (
-    <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-      <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-        Welcome to MovieDb
-      </h2>
-      <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-        Login to MovieDb if you can because we don&apos;t have a login flow yet
-      </p>
+    <Tabs defaultValue="login" className="w-full max-w-md mx-auto">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="login">Login</TabsTrigger>
+        <TabsTrigger value="signup">Sign Up</TabsTrigger>
+      </TabsList>
 
-      <form className="my-8" onSubmit={handleSubmit}>
-        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-          <LabelInputContainer>
-            <Label htmlFor="firstName">First name</Label>
-            <Input
-              id="firstName"
-              placeholder="Tyler"
-              type="text"
-              value={formData.firstName}
-              onChange={handleChange}
-            />
-          </LabelInputContainer>
-          <LabelInputContainer>
-            <Label htmlFor="lastName">Last name</Label>
-            <Input
-              id="lastName"
-              placeholder="Durden"
-              type="text"
-              value={formData.lastName}
-              onChange={handleChange}
-            />
-          </LabelInputContainer>
-        </div>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="email">Email Address</Label>
-          <Input
-            id="email"
-            placeholder="projectmayhem@fc.com"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            placeholder="••••••••"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-8">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <Input
-            id="confirmPassword"
-            placeholder="••••••••"
-            type="password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
-          {!isPasswordMatch && (
-            <p className="text-red-500 text-sm">Passwords do not match</p>
-          )}
-        </LabelInputContainer>
+      {/* Login Tab */}
+      <TabsContent value="login">
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Login</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLoginSubmit}>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="email">Username</Label>
+                  <Input
+                    type="text"
+                    name="username"
+                    value={loginInput.username}
+                    onChange={(e) => handleInputChange(e, "login")}
+                  />
+                  {loginErrors.username && (
+                    <p className="text-red-500 text-sm">
+                      {loginErrors.username}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    type="password"
+                    name="password"
+                    value={loginInput.password}
+                    onChange={(e) => handleInputChange(e, "login")}
+                  />
+                  {loginErrors.password && (
+                    <p className="text-red-500 text-sm">
+                      {loginErrors.password}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <CardFooter className="mt-4">
+                <Button type="submit" className="w-full">
+                  Login
+                </Button>
+              </CardFooter>
+            </form>
+          </CardContent>
+        </Card>
+      </TabsContent>
 
-        <button
-          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-          type="submit"
-          disabled={!isPasswordMatch}
-        >
-          Sign up &rarr;
-          <BottomGradient />
-        </button>
-
-        <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
-      </form>
-    </div>
+      {/* Sign Up Tab */}
+      <TabsContent value="signup">
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Sign Up</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSignupSubmit}>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="username">Username</Label>
+                  <Input
+                    type="text"
+                    name="username"
+                    value={signupInput.username}
+                    onChange={(e) => handleInputChange(e, "signup")}
+                  />
+                  {signupErrors.username && (
+                    <p className="text-red-500 text-sm">
+                      {signupErrors.username}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    type="email"
+                    name="email"
+                    value={signupInput.email}
+                    onChange={(e) => handleInputChange(e, "signup")}
+                  />
+                  {signupErrors.email && (
+                    <p className="text-red-500 text-sm">{signupErrors.email}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    type="password"
+                    name="password"
+                    value={signupInput.password}
+                    onChange={(e) => handleInputChange(e, "signup")}
+                  />
+                  {signupErrors.password && (
+                    <p className="text-red-500 text-sm">
+                      {signupErrors.password}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <CardFooter className="mt-4">
+                <Button type="submit" className="w-full">
+                  Sign Up
+                </Button>
+              </CardFooter>
+            </form>
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
   );
 }
-
-const BottomGradient = () => {
-  return (
-    <>
-      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
-      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-    </>
-  );
-};
-
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
-  );
-};

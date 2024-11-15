@@ -8,7 +8,7 @@ const isBrowser = typeof window !== "undefined";
 // Save the token to localStorage (only in the browser)
 export function saveToken(token: string) {
   if (isBrowser) {
-    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(TOKEN_KEY, JSON.stringify({ token }));
   }
 }
 
