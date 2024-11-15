@@ -1,53 +1,93 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import React from "react";
+import Autoplay from "embla-carousel-autoplay";
+import {
+  Calendar,
+  ChevronRight,
+  CirclePlay,
+  Clock,
+  CreativeCommons,
+  Mic,
+} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import { getTopRatedTVShows } from "@/app/services/tv.service";
 
 const Home = () => {
-  return (
-    <div>
-      {/* Hero Section with Gradient */}
-      <div className="relative bg-[url('/images/hero.jpg')] w-full h-[85vh] bg-cover bg-no-repeat py-20 px-10">
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 w-2/3 bg-gradient-to-r from-black/90 via-black/80 to-transparent"></div>
+  const [tvShows, setTvShows] = useState<any[]>([]);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
+    Autoplay({ playOnInit: false, delay: 5000, stopOnInteraction: true }),
+  ]);
 
-        <div className="text-primary-foreground max-w-3xl relative z-10 p-6 rounded-lg  shadow-lg">
-          <h6 className="text-accent-foreground font-semibold text-lg mb-2">
-            #6 Spotlight
-          </h6>
-          <h2 className="text-primary font-bold text-3xl mb-4">
-            The Strongest Magician in the Demon Lord's Army Was a...
-          </h2>
-          <div className="flex items-center gap-2 text-muted-foreground text-sm mb-4">
-            <span className="flex items-center gap-1">
-              <i className="icon-tv"></i> TV
-            </span>
-            <span>•</span>
-            <span>24m</span>
-            <span>•</span>
-            <span>Jul 3, 2024</span>
-            <span className="px-2 py-1 bg-accent text-xs rounded-md">HD</span>
-            <span className="px-2 py-1 bg-secondary text-xs rounded-md">
-              cc 12
-            </span>
-            <span className="px-2 py-1 bg-muted text-xs rounded-md">12</span>
-          </div>
-          <p className="text-muted-foreground mb-6">
-            Under the tutelage of the great demon warlock Romberg, Ike grew up
-            with knowledge regarding an ancient advanced civilization that once
-            ruled the land. Coupled with his innate talent in magical arts, this
-            upbringing allows Ike to quickly rise in the Demon Lord's army
-            ranks, leading his brigade to...
-          </p>
-          <div className="flex gap-4">
-            <Button className="bg-accent text-white px-4 py-2 rounded-md">
-              Watch Now
-            </Button>
-            <Button
-              variant="outline"
-              className="text-muted-foreground border-border px-4 py-2 rounded-md"
+  const getTopRatedTv = async () => {
+    const tvs = await getTopRatedTVShows();
+    setTvShows(tvs);
+  };
+
+  useEffect(() => {
+    getTopRatedTv();
+  }, []);
+
+  return (
+    <div className="w-full h-[85vh]">
+      <div className="embla h-full" ref={emblaRef}>
+        <div className="embla__container flex h-full">
+          {tvShows.map((show, index) => (
+            <div
+              key={show.id} // Use `show.id` as the unique key
+              className="embla__slide flex-none w-full h-full relative"
             >
-              Detail
-            </Button>
-          </div>
+              {/* Slide Background Image */}
+              <div
+                className="relative w-full h-full bg-cover bg-no-repeat flex items-center px-8"
+                style={{
+                  backgroundImage: `url(https://image.tmdb.org/t/p/original${show.backdrop_path})`, // Use the full URL for the backdrop image
+                }}
+              >
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 w-2/3 bg-gradient-to-r from-black/90 via-black/80 to-transparent"></div>
+
+                {/* Slide Content */}
+                <div className="text-primary-foreground max-w-3xl relative z-10 p-6">
+                  <h6 className="text-pink font-semibold text-lg mb-2">
+                    #{index + 1} Spotlight
+                  </h6>
+                  <h2 className="text-primary font-bold text-4xl mb-4">
+                    {show.name} {/* Show name from the object */}
+                  </h2>
+                  <div className="flex items-center gap-2 text-primary text-sm mb-4">
+                    <span className="flex items-center gap-1">
+                      <CirclePlay className="size-4" /> TV
+                    </span>
+                    <span>
+                      <Calendar className="size-4" />
+                    </span>
+                    <span>{show.first_air_date}</span> {/* Air date */}
+                    <span className="px-2 py-1 bg-pink text-xs font-bold text-black rounded-md">
+                      HD
+                    </span>
+                    <span className="px-2 py-1 bg-green font-bold text-black flex gap-1 items-center text-xs rounded-md">
+                      {show.vote_average} {/* Display average rating */}
+                    </span>
+                    <span className="px-2 py-1 flex items-center gap-1 bg-blue text-black font-bold text-xs rounded-md">
+                      {show.vote_count} {/* Display the vote count */}
+                    </span>
+                  </div>
+                  <p className="text-primary/85 mb-6">{show.overview}</p>{" "}
+                  {/* Show description */}
+                  <div className="flex gap-4">
+                    <Button
+                      variant="primary"
+                      className="rounded-full px-6 py-2"
+                    >
+                      Details <ChevronRight />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
