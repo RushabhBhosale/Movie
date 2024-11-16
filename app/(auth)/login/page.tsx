@@ -20,8 +20,14 @@ import {
 } from "@/schema/userSchema";
 import { loginUser, registerUser } from "@/app/services/auth.service";
 import { saveToken } from "@/utils/token";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useAuthStore } from "@/store/authStore";
+import { ResponseInterface } from "@/types/responseTypes";
 
 export default function AuthTabs() {
+  const router = useRouter();
+  const { setToken } = useAuthStore();
   const [loginInput, setLoginInput] = useState<LoginInputState>({
     username: "",
     password: "",
@@ -59,9 +65,15 @@ export default function AuthTabs() {
       );
     } else {
       setLoginErrors({});
-      const res = await loginUser(loginInput);
-      if (res) {
-        saveToken(res.token);
+      try {
+        const res: any = await loginUser(loginInput);
+        if (res && res.data.success) {
+          setToken(res.data?.data?.token);
+          toast.success(res.data.message);
+          router.push("/home");
+        }
+      } catch (error: any) {
+        toast.error(error.response.data?.message || "Failed to login");
       }
     }
   };
@@ -76,7 +88,13 @@ export default function AuthTabs() {
       );
     } else {
       setSignupErrors({});
-      const res = await registerUser(signupInput);
+      try {
+        const res = await registerUser(signupInput);
+        router.push("/home");
+        toast.success(res.data.message);
+      } catch (error: any) {
+        toast.error(error.response.data.message);
+      }
     }
   };
 

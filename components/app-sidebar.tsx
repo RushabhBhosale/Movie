@@ -56,6 +56,7 @@ const items = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  console.log(pathname);
   return (
     <Sidebar variant="inset">
       <SidebarHeader title="Movie">
@@ -81,8 +82,9 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    className="px-3 py-5"
-                    isActive={pathname === item.url}
+                    className={`px-3 py-5 ${
+                      pathname === item.url ? "bg-muted-foreground/20" : ""
+                    } hover:bg-muted-foreground/20`}
                   >
                     <a href={item.url}>
                       <item.icon />

@@ -1,28 +1,19 @@
-// utils/token.ts
-
+"use client";
 const TOKEN_KEY = "MOVIE";
 
-// Check if we're in a browser environment
-const isBrowser = typeof window !== "undefined";
-
-// Save the token to localStorage (only in the browser)
 export function saveToken(token: string) {
-  if (isBrowser) {
-    localStorage.setItem(TOKEN_KEY, JSON.stringify({ token }));
-  }
+  localStorage.setItem(TOKEN_KEY, JSON.stringify({ token }));
 }
 
-// Retrieve the token from localStorage (only in the browser)
 export function getToken(): string | null {
-  if (isBrowser) {
-    return localStorage.getItem(TOKEN_KEY);
+  const tokenString = localStorage.getItem(TOKEN_KEY);
+  if (tokenString) {
+    const tokenObj = JSON.parse(tokenString);
+    return tokenObj.token;
   }
   return null;
 }
 
-// Remove the token from localStorage (only in the browser)
 export function removeToken() {
-  if (isBrowser) {
-    localStorage.removeItem(TOKEN_KEY);
-  }
+  localStorage.removeItem(TOKEN_KEY);
 }

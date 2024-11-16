@@ -1,48 +1,66 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import Autoplay from "embla-carousel-autoplay";
-import {
-  Calendar,
-  ChevronRight,
-  CirclePlay,
-  Clock,
-  CreativeCommons,
-  Mic,
-} from "lucide-react";
 import React, { useEffect, useState } from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import { getTopRatedTVShows } from "@/app/services/tv.service";
+import { Button } from "@/components/ui/button";
+import { ChevronRight, ChevronLeft, CirclePlay, Calendar } from "lucide-react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper-bundle.css"; // Import Swiper styles
+import {
+  getTopRatedTVShows,
+  getPopularTVShows,
+} from "@/app/services/tv.service"; // Assuming you have the movies service
+import MovieCarousel from "@/components/movieCarousel"; // Custom carousel component for movie cards
 
 const Home = () => {
   const [tvShows, setTvShows] = useState<any[]>([]);
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
-    Autoplay({ playOnInit: false, delay: 5000, stopOnInteraction: true }),
-  ]);
+  const [movies, setMovies] = useState<any[]>([]);
 
+  // Fetch top-rated TV shows
   const getTopRatedTv = async () => {
-    const tvs = await getTopRatedTVShows();
-    setTvShows(tvs);
+    try {
+      const tvs = await getTopRatedTVShows();
+      setTvShows(tvs.data?.data?.results);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Fetch popular movies
+  const getPopularMoviesList = async () => {
+    try {
+      const popularMovies = await getPopularTVShows(); // Modify if needed to get movies
+      setMovies(popularMovies.data?.data?.results);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
     getTopRatedTv();
+    getPopularMoviesList();
   }, []);
 
   return (
-    <div className="w-full h-[85vh]">
-      <div className="embla h-full" ref={emblaRef}>
-        <div className="embla__container flex h-full">
+    <div>
+      {/* Hero Carousel - Main Spotlight */}
+      <div className="w-full h-[85vh]">
+        <Swiper
+          spaceBetween={10}
+          slidesPerView={1} // Show 1 slide at once (Full screen hero)
+          loop={true}
+          autoplay={{
+            delay: 5000,
+            disableOnInteraction: false,
+          }}
+          className="swiper-container h-full"
+        >
           {tvShows.map((show, index) => (
-            <div
-              key={show.id} // Use `show.id` as the unique key
-              className="embla__slide flex-none w-full h-full relative"
-            >
-              {/* Slide Background Image */}
+            <SwiperSlide key={show.id}>
+              {/* Hero Slide - Background Image */}
               <div
                 className="relative w-full h-full bg-cover bg-no-repeat flex items-center px-8"
                 style={{
-                  backgroundImage: `url(https://image.tmdb.org/t/p/original${show.backdrop_path})`, // Use the full URL for the backdrop image
+                  backgroundImage: `url(https://image.tmdb.org/t/p/original${show.backdrop_path})`,
                 }}
               >
                 {/* Gradient Overlay */}
@@ -54,7 +72,7 @@ const Home = () => {
                     #{index + 1} Spotlight
                   </h6>
                   <h2 className="text-primary font-bold text-4xl mb-4">
-                    {show.name} {/* Show name from the object */}
+                    {show.name}
                   </h2>
                   <div className="flex items-center gap-2 text-primary text-sm mb-4">
                     <span className="flex items-center gap-1">
@@ -63,19 +81,18 @@ const Home = () => {
                     <span>
                       <Calendar className="size-4" />
                     </span>
-                    <span>{show.first_air_date}</span> {/* Air date */}
+                    <span>{show.first_air_date}</span>
                     <span className="px-2 py-1 bg-pink text-xs font-bold text-black rounded-md">
                       HD
                     </span>
                     <span className="px-2 py-1 bg-green font-bold text-black flex gap-1 items-center text-xs rounded-md">
-                      {show.vote_average} {/* Display average rating */}
+                      {show.vote_average}
                     </span>
                     <span className="px-2 py-1 flex items-center gap-1 bg-blue text-black font-bold text-xs rounded-md">
-                      {show.vote_count} {/* Display the vote count */}
+                      {show.vote_count}
                     </span>
                   </div>
-                  <p className="text-primary/85 mb-6">{show.overview}</p>{" "}
-                  {/* Show description */}
+                  <p className="text-primary/85 mb-6">{show.overview}</p>
                   <div className="flex gap-4">
                     <Button
                       variant="primary"
@@ -86,9 +103,14 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </SwiperSlide>
           ))}
-        </div>
+        </Swiper>
+      </div>
+
+      {/* Movie Carousel - Scrollable Movie Cards */}
+      <div className="mt-10">
+        <MovieCarousel movies={movies} />
       </div>
     </div>
   );
