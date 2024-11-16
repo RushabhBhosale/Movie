@@ -3,11 +3,9 @@ import localFont from "next/font/local";
 
 // Google Fonts (Cinematic and Modern)
 import { Poppins, Cinzel } from "next/font/google";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import Navbar from "@/components/app-navbar";
 import "./globals.css";
 import { Toaster } from "sonner";
+import Navbar from "@/components/navbar";
 
 // Custom local fonts
 const geistSans = localFont({
@@ -55,6 +53,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${cinzel.variable} antialiased`}
       >
+        <Navbar />
         <main className="w-full">
           <div>{children} </div>
           <Toaster />

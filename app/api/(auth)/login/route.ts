@@ -2,8 +2,8 @@ import connectDB from "@/lib/db";
 import User, { LoginInterface } from "@/models/user";
 import { generateToken } from "@/utils/generateToken";
 import { errorResponse, successResponse } from "@/utils/response";
-import { saveToken } from "@/utils/token";
 import bcrypt from "bcryptjs";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   await connectDB();
@@ -44,11 +44,28 @@ export async function POST(req: Request) {
       username: user.username,
     });
 
-    return successResponse({
-      status: 200,
+    // Create the response object
+    const response = NextResponse.json({
       message: "Login successfully",
-      body: { token },
+      body: {
+        token,
+        user: {
+          username,
+          email: user.email,
+        },
+      },
     });
+
+    // Set the token in HTTP-only cookies
+    response.cookies.set("token", token, {
+      httpOnly: true, // Secure against XSS
+      secure: process.env.NODE_ENV === "production", // Use only in HTTPS in production
+      sameSite: "strict", // Prevent CSRF
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: "/", // Accessible to all routes
+    });
+
+    return response;
   } catch (error) {
     console.error("Error logging user:", error);
     return errorResponse({
