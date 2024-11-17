@@ -8,7 +8,9 @@ body {
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
+    --background: 220, 17%, 7%, 1;
+    --muted-background: 263, 14%, 11%;
+    --color: 220, 100%, 95%, 1;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -43,8 +45,6 @@ body {
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    --sidebar-width: 30rem;
-    --sidebar-width-mobile: 20rem;
   }
 }
 
@@ -57,6 +57,31 @@ body {
   }
 }
 
-.bg-sidebar {
-  background-color: black !important;
+.swiper-button-prev,
+.swiper-button-next {
+  color: rgba(202, 192, 178, 0) !important;
+  height: 350px !important;
+  width: 50px !important;
+  transform: translateY(-40%);
+}
+
+::-webkit-scrollbar {
+  width: 15px;
+  background-color: rgba(54, 54, 54, 0);
+  border-radius: 4px;
+  height: 15px;
+  visibility: hidden;
+}
+
+::-webkit-scrollbar-thumb {
+  width: 10px;
+  height: auto;
+  visibility: hidden;
+  border-radius: 4px;
+  background-color: rgba(190, 190, 190, 0.201);
+}
+
+::-webkit-scrollbar:hover,
+::-webkit-scrollbar-thumb:hover {
+  visibility: visible;
 }

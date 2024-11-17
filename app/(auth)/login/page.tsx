@@ -5,9 +5,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginInput, loginSchema } from "@/services/auth.service";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const { isLoading, login } = useAuthStore();
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -15,7 +18,13 @@ const Login = () => {
   } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = async (data: LoginInput) => {
-    await login(data);
+    try {
+      await login(data);
+      router.push("/home");
+      toast.success("Login successful");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -59,7 +68,8 @@ const Login = () => {
         </div>
         <Button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded"
+          variant="primary"
+          className="w-full"
           disabled={isLoading}
         >
           {isLoading ? "Loading..." : "Login"}

@@ -19,6 +19,7 @@ const config = {
     },
     extend: {
       colors: {
+        muted_background: "#1b1820",
         pink: "#ffbadf",
         blue: "#b9e7ff",
         green: "#b0e3af",

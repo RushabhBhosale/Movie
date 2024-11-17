@@ -1,33 +1,7 @@
 "use client";
 
-import {
-  ChevronUp,
-  Clapperboard,
-  Compass,
-  TrendingUp,
-  BookmarkCheck,
-  User2,
-  Settings,
-} from "lucide-react";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarSeparator,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+import { Compass, TrendingUp, BookmarkCheck, Settings } from "lucide-react";
+
 import { usePathname } from "next/navigation";
 
 // Menu items.
@@ -54,77 +28,25 @@ const items = [
   },
 ];
 
-export function AppSidebar() {
+export function Sidebar() {
   const pathname = usePathname();
-  console.log(pathname);
   return (
-    <Sidebar variant="inset">
-      <SidebarHeader title="Movie">
-        <SidebarMenuButton asChild>
-          <div className="flex items-center justify-between">
-            <a
-              href="/"
-              className="py-7 flex gap-3 justify-between items-center"
-            >
-              <Clapperboard className="size-5" />
-              <span className="text-lg">Movie Flix</span>
-            </a>
-            <SidebarTrigger />
-          </div>
-        </SidebarMenuButton>
-      </SidebarHeader>
-      <SidebarSeparator />
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    className={`px-3 py-5 ${
-                      pathname === item.url ? "bg-muted-foreground/20" : ""
-                    } hover:bg-muted-foreground/20`}
-                  >
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                  <User2 /> Username
-                  <ChevronUp className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-[--radix-popper-anchor-width]"
-              >
-                <DropdownMenuItem>
-                  <span>Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Billing</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
+    <div className="bg-background w-full h-[90.7vh] overflow-auto">
+      <ul>
+        {items.map((item) => (
+          <li
+            key={item.title}
+            className={`flex items-center py-2 px-4 ${
+              pathname === item.url
+                ? "bg-gray-700 text-white"
+                : "text-gray-500 hover:bg-gray-600"
+            }`}
+          >
+            <item.icon className="mr-4" />
+            <span>{item.title}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
