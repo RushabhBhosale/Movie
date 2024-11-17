@@ -1,8 +1,14 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { Compass, TrendingUp, BookmarkCheck, Settings } from "lucide-react";
-
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
 // Menu items.
 const items = [
@@ -28,10 +34,15 @@ const items = [
   },
 ];
 
-export function Sidebar() {
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   return (
-    <div className="bg-background w-full h-[90.7vh] overflow-auto">
+    <div
+      className={cn(
+        "bg-background w-full h-[95vh] overflow-auto transition-transform",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      )}
+    >
       <ul>
         {items.map((item) => (
           <li
