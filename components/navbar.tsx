@@ -2,22 +2,9 @@
 
 import React, { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
-import { getTokenFromServer } from "@/utils/cookies";
 
 const Navbar = () => {
-  const { user, logout, setUser, setToken } = useAuthStore();
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      const token = await getTokenFromServer();
-      if (token) {
-        // You can optionally fetch user data based on the token
-        setUser({ token });
-      }
-    };
-
-    fetchToken();
-  }, [setUser, setToken]);
+  const { user, logout } = useAuthStore();
 
   return (
     <nav className="bg-gray-800 text-white p-4 flex justify-between">

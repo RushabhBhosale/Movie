@@ -29,6 +29,7 @@
     "embla-carousel-react": "^8.3.1",
     "embla-carousel-wheel-gestures": "^8.0.1",
     "framer-motion": "^11.11.17",
+    "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.456.0",
     "mongodb": "^6.10.0",
@@ -49,6 +50,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/js-cookie": "^3.0.6",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/mongoose": "^5.11.97",
     "@types/next": "^9.0.0",
