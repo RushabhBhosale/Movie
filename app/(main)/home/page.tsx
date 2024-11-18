@@ -3,14 +3,14 @@
 import React, { useEffect, useState } from "react";
 import HeroCarousel from "./hero-carousel";
 import { tvService } from "@/services/tv.service";
+import CardList from "./movie-carousel";
 
 const Home = () => {
   const [tvShows, setTvShows] = useState();
   const getTopRatedTvShows = async () => {
     try {
       const tvShows = await tvService.getTopRatedTv();
-      console.log(tvShows);
-      setTvShows(tvShows.data.data.results);
+      setTvShows(tvShows.data.data);
     } catch (error) {
       console.error("Error fetching top-rated TV shows:", error);
     }
@@ -20,9 +20,29 @@ const Home = () => {
     getTopRatedTvShows();
   }, []);
   return (
-    <div className="">
+    <div>
       <div>
-        <HeroCarousel tv={tvShows} />
+        <HeroCarousel
+          tv={
+            tvShows || {
+              page: 1,
+              results: [],
+              total_pages: 1,
+              total_results: 0,
+            }
+          }
+        />
+        <CardList
+          title="Top Rated Tv Shows"
+          list={
+            tvShows || {
+              page: 1,
+              results: [],
+              total_pages: 1,
+              total_results: 0,
+            }
+          }
+        />
       </div>
     </div>
   );

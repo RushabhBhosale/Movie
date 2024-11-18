@@ -28,7 +28,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             className={cn(
               "w-[100%] p-5 transition-all",
               isSidebarOpen ? "lg:w-[88%]" : "lg:w-[100%]",
-              isSidebarOpen ? "ml-[172px]" : ""
+              isSidebarOpen ? "lg:ml-[172px]" : ""
             )}
           >
             {children}

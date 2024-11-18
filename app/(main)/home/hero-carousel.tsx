@@ -5,8 +5,13 @@ import { Navigation, Pagination } from "swiper/modules";
 import Image from "next/image";
 import Link from "next/link";
 import { BadgeInfoIcon, PlayIcon } from "lucide-react";
+import { TVListResponse } from "@/types/tmdb";
 
-const HeroCarousel = ({ tv }: any) => {
+interface HeroCarouselProps {
+  tv: TVListResponse;
+}
+
+const HeroCarousel = ({ tv }: HeroCarouselProps) => {
   console.log(tv);
   return (
     <div>
@@ -22,7 +27,7 @@ const HeroCarousel = ({ tv }: any) => {
         className="mySwiper w-full h-[32rem] rounded-xl"
       >
         {tv &&
-          tv.map((movie: any, index: number) => (
+          tv.results.map((movie: any, index: number) => (
             <SwiperSlide className="slides w-full relative" key={index}>
               <Image
                 alt="backdrop"

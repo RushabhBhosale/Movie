@@ -28,7 +28,7 @@ interface BelongsToCollection {
   backdrop_path: string | null;
 }
 
-interface Movie {
+export interface Movie {
   adult: boolean;
   backdrop_path: string | null;
   belongs_to_collection: BelongsToCollection | null;
@@ -90,7 +90,7 @@ interface Season {
   vote_average: number;
 }
 
-interface TVShow {
+export interface TVShow {
   adult: boolean;
   backdrop_path: string;
   created_by: string[];
@@ -117,6 +117,7 @@ interface TVShow {
   production_companies: ProductionCompany[];
   production_countries: ProductionCountry[];
   seasons: Season[];
+  vote_average: number;
 }
 
 export interface MoviesListResponse {
