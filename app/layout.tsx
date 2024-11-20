@@ -50,7 +50,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`bg-muted_background ${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${cinzel.variable} antialiased`}
+        className={`bg-back ${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${cinzel.variable} antialiased`}
       >
         <main className="w-full">
           <div>{children}</div>

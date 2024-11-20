@@ -1,20 +1,18 @@
-import {} from "@/app/api/(services)/movie.service";
 import { fetchPopularTV } from "@/app/api/(services)/tv.service";
-import { errorResponse, successResponse } from "@/utils/response";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
     const tvShows = await fetchPopularTV();
-    return successResponse({
-      status: 200,
-      message: "Popular tv shows fetched successfully",
-      body: tvShows,
-    });
+    return NextResponse.json(
+      {
+        message: "Popular TV shows fetched successfully",
+        data: tvShows,
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("Error fetching popular tv:", error);
-    return errorResponse({
-      status: 500,
-      message: "Server error",
-    });
+    console.error("Error fetching popular TV:", error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

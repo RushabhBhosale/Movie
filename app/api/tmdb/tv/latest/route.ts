@@ -1,20 +1,19 @@
 import { fetchLatestTV } from "@/app/api/(services)/tv.service";
 import { NextRequest } from "next/server";
-import { errorResponse, successResponse } from "@/utils/response";
+import { NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
     const tvDetails = await fetchLatestTV();
-    return successResponse({
-      status: 200,
-      message: "Latest Tv shows fetched successfully",
-      body: tvDetails,
-    });
+    return NextResponse.json(
+      {
+        message: "Latest TV shows fetched successfully",
+        data: tvDetails,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching latest shows details:", error);
-    return errorResponse({
-      status: 500,
-      message: "Server error",
-    });
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

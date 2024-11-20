@@ -24,7 +24,7 @@ const page = () => {
   const getKeywords = async () => {
     try {
       const keywords = await trendingService.getTrendingKeywords();
-      setBanner(keywords.data.data.results[16].backdrop_path);
+      setBanner(keywords.data.data.results[0].backdrop_path);
       const trending = keywords.data.data.results.map((item: any) => {
         const value = item.name || item.title;
         return value.length > 20 ? `${value.slice(0, 20)}...` : value;

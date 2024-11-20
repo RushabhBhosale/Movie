@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
@@ -54,11 +54,7 @@ const Navbar = ({ onSidebarToggle }: NavbarProps) => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button
-                onClick={() => router.push("/login")}
-                variant="primary"
-                className="text-blue-500"
-              >
+              <Button onClick={() => router.push("/login")} variant="primary">
                 Login
               </Button>
             )}

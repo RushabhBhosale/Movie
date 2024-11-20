@@ -16,7 +16,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       <div className="mb-[64px]">
         <Navbar onSidebarToggle={() => setSidebarOpen((prev) => !prev)} />
       </div>
-      <div className="bg-muted_background w-full min-h-[90.5vh]">
+      <div className="bg-back w-full min-h-[90.5vh]">
         <div className="flex">
           <div className="lg:w-[12%] fixed z-10 w-[180px]">
             <Sidebar

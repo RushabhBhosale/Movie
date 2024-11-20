@@ -2,29 +2,27 @@ import {
   fetchReviews,
   fetchSimilarMovies,
 } from "@/app/api/(services)/movie.service";
-import { errorResponse, successResponse } from "@/utils/response";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
     const movieId = req.url.split("/").pop(); // Extracts movieId from the URL path
     if (!movieId) {
-      return errorResponse({
-        status: 400,
-        message: "Movie ID is required",
-      });
+      return NextResponse.json(
+        { message: "Movie ID is required" },
+        { status: 400 }
+      );
     }
-    const movies = await fetchReviews(Number(movieId));
-    return successResponse({
-      status: 200,
-      message: "Movie Reviews fetched successfully",
-      body: movies,
-    });
+    const reviews = await fetchReviews(Number(movieId));
+    return NextResponse.json(
+      {
+        message: "Movie Reviews fetched successfully",
+        data: reviews,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching movie reviews:", error);
-    return errorResponse({
-      status: 500,
-      message: "Server error",
-    });
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

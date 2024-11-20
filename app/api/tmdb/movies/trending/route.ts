@@ -1,19 +1,18 @@
 import { fetchTrendingMovies } from "@/app/api/(services)/movie.service";
-import { errorResponse, successResponse } from "@/utils/response";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
     const movies = await fetchTrendingMovies();
-    return successResponse({
-      status: 200,
-      message: "Trending movies fetched successfully",
-      body: movies,
-    });
+    return NextResponse.json(
+      {
+        message: "Trending movies fetched successfully",
+        data: movies,
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("Error fetching popular movies:", error);
-    return errorResponse({
-      status: 500,
-      message: "Server error",
-    });
+    console.error("Error fetching trending movies:", error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

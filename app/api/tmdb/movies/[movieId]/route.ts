@@ -1,27 +1,31 @@
 import { fetchMovieDetails } from "@/app/api/(services)/movie.service";
 import { NextRequest, NextResponse } from "next/server";
-import { errorResponse, successResponse } from "@/utils/response";
 
 export async function GET(req: NextRequest) {
   const movieId = req.url.split("/").pop(); // Extracts movieId from the URL path
+
   if (!movieId) {
-    return errorResponse({
-      status: 400,
-      message: "Movie ID is required",
-    });
+    return NextResponse.json(
+      { message: "Movie ID is required" },
+      { status: 400 }
+    );
   }
+
   try {
     const movies = await fetchMovieDetails(Number(movieId));
-    return successResponse({
-      status: 200,
-      message: "Movie Details fetched successfully",
-      body: movies,
-    });
+
+    // Return a successful response with movie details
+    return NextResponse.json(
+      {
+        message: "Movie Details fetched successfully",
+        data: movies,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching movie details:", error);
-    return errorResponse({
-      status: 500,
-      message: "Server error",
-    });
+
+    // Return an error response
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

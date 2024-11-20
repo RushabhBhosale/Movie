@@ -1,29 +1,29 @@
 import connectDB from "@/lib/db";
-import User, { IUser } from "@/models/user";
-import { errorResponse, successResponse } from "@/utils/response";
+import User, { UserInterface } from "@/models/user";
 import bcrypt from "bcryptjs";
+import { NextResponse } from "next/server";
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
   await connectDB();
 
   try {
     // Parse the request body only once
-    const { username, email, password } = (await req.json()) as IUser;
+    const { username, email, password } = (await req.json()) as UserInterface;
 
     // Validate required fields
     if (!username || !email || !password) {
-      return errorResponse({
-        status: 400,
-        message: "Invalid username, email, or password",
+      return NextResponse.json({
+        message: "Please fill in all required fields",
+        status: 200,
       });
     }
 
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return errorResponse({
+      return NextResponse.json({
+        message: "User already exists",
         status: 400,
-        message: "Email already exists",
       });
     }
 
@@ -31,22 +31,27 @@ export async function POST(req: Request, res: Response) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create new user
-    const user: IUser = await User.create({
+    const user: UserInterface = await User.create({
       username,
       email,
       password: hashedPassword,
     });
 
-    return successResponse({
-      status: 201,
+    return NextResponse.json({
       message: "User created successfully",
-      body: { username: user.username, email: user.email },
+      data: {
+        user: {
+          username,
+          email,
+        },
+      },
+      status: 201,
     });
   } catch (error) {
     console.error("Error creating user:", error);
-    return errorResponse({
-      status: 500,
+    return NextResponse.json({
       message: "Server error",
+      status: 500,
     });
   }
 }

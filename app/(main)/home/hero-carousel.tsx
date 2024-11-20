@@ -4,15 +4,15 @@ import "swiper/modules";
 import { Navigation, Pagination } from "swiper/modules";
 import Image from "next/image";
 import Link from "next/link";
-import { BadgeInfoIcon, PlayIcon } from "lucide-react";
+import { Info, PlayIcon } from "lucide-react";
 import { TVListResponse } from "@/types/tmdb";
+import { Button } from "@/components/ui/button";
 
 interface HeroCarouselProps {
-  tv: TVListResponse;
+  list: TVListResponse;
 }
 
-const HeroCarousel = ({ tv }: HeroCarouselProps) => {
-  console.log(tv);
+const HeroCarousel = ({ list }: HeroCarouselProps) => {
   return (
     <div>
       <Swiper
@@ -26,8 +26,8 @@ const HeroCarousel = ({ tv }: HeroCarouselProps) => {
         modules={[Pagination, Navigation]}
         className="mySwiper w-full h-[32rem] rounded-xl"
       >
-        {tv &&
-          tv.results.map((movie: any, index: number) => (
+        {list &&
+          list.results.map((movie: any, index: number) => (
             <SwiperSlide className="slides w-full relative" key={index}>
               <Image
                 alt="backdrop"
@@ -72,12 +72,13 @@ const HeroCarousel = ({ tv }: HeroCarouselProps) => {
                       movie.title ? `movie${movie.title}` : `tv${movie.name}`
                     }`}
                   >
-                    <div className="my-7 flex gap-3 w-30 rounded-md bg-[#313036e7] hover:bg-[#242428] px-4 py-2">
-                      <PlayIcon width={20} />
-                      <button className=" text-sm font-medium text-white">
-                        Watch Now
-                      </button>
-                    </div>
+                    <Button
+                      variant="primary"
+                      className=" text-sm font-medium text-black"
+                    >
+                      <PlayIcon className="text-black size-5" />
+                      Watch Now
+                    </Button>
                   </Link>
                   <Link
                     href={`/detail/${movie.id}${
@@ -85,7 +86,7 @@ const HeroCarousel = ({ tv }: HeroCarouselProps) => {
                     }`}
                   >
                     <div className="my-7 flex gap-2 w-30 rounded-md text-gray-700 bg-white px-4 py-2">
-                      <BadgeInfoIcon width={20} />
+                      <Info className="size-5" />
                       <button className=" text-sm font-medium text-black">
                         More Info
                       </button>

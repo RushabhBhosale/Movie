@@ -1,28 +1,23 @@
 import { fetchTVReviews } from "@/app/api/(services)/tv.service";
-import { NextRequest } from "next/server";
-import { errorResponse, successResponse } from "@/utils/response";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const tvId = req.url.split("/").pop(); // Extracts tvId from the URL path
   if (!tvId) {
-    return errorResponse({
-      status: 400,
-      message: "TV ID is required",
-    });
+    return NextResponse.json({ message: "TV ID is required" }, { status: 400 });
   }
 
   try {
     const tvDetails = await fetchTVReviews(Number(tvId));
-    return successResponse({
-      status: 200,
-      message: "Tv shows reviews fetched successfully",
-      body: tvDetails,
-    });
+    return NextResponse.json(
+      {
+        message: "TV shows reviews fetched successfully",
+        data: tvDetails,
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("Error fetching tv reviews details:", error);
-    return errorResponse({
-      status: 500,
-      message: "Server error",
-    });
+    console.error("Error fetching TV reviews details:", error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

@@ -1,7 +1,6 @@
 import connectDB from "@/lib/db";
 import User, { LoginInterface } from "@/models/user";
 import { generateToken } from "@/utils/generateToken";
-import { errorResponse, successResponse } from "@/utils/response";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
@@ -9,68 +8,52 @@ export async function POST(req: Request) {
   await connectDB();
 
   try {
+    // Access the request body using req.json() in the App Router
     const body = await req.json();
     const { username, password }: LoginInterface = body;
 
+    // Validate input
     if (!username || !password) {
-      return errorResponse({
+      return NextResponse.json({
+        message: "Please enter a username and password",
         status: 400,
-        message: "Please fill all required fields",
       });
     }
 
-    const user = await User.findOne({
-      username,
-    });
+    // Check if the user exists
+    const user = await User.findOne({ username });
 
     if (!user) {
-      return errorResponse({
-        status: 400,
-        message: "User not found",
-      });
+      return NextResponse.json({ message: "User not found", status: 400 });
     }
 
+    // Compare the provided password with the stored hash
     const matchPassword = await bcrypt.compare(password, user.password);
 
     if (!matchPassword) {
-      return errorResponse({
-        status: 401,
-        message: "Invalid password",
-      });
+      return NextResponse.json({ message: "Invalid credentials", status: 400 });
     }
 
+    // Generate the token
     const token = generateToken({
       id: String(user._id),
       username: user.username,
     });
 
-    // Create the response object
-    const response = NextResponse.json({
+    // Return a success response with the token and user data
+    return NextResponse.json({
       message: "Login successfully",
-      body: {
+      data: {
         token,
         user: {
           username,
           email: user.email,
         },
       },
+      status: 200,
     });
-
-    // Set the token in HTTP-only cookies
-    response.cookies.set("token", token, {
-      httpOnly: true, // Secure against XSS
-      secure: process.env.NODE_ENV === "production", // Use only in HTTPS in production
-      sameSite: "strict", // Prevent CSRF
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      path: "/", // Accessible to all routes
-    });
-
-    return response;
   } catch (error) {
     console.error("Error logging user:", error);
-    return errorResponse({
-      status: 500,
-      message: "Server error",
-    });
+    return NextResponse.json({ message: "Server error", status: 500 });
   }
 }

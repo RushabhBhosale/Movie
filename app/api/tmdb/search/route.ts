@@ -1,17 +1,15 @@
 import { tmdbClient } from "@/lib/tmdb";
 import { MoviesListResponse } from "@/types/tmdb";
-import { errorResponse, successResponse } from "@/utils/response";
-import axios from "axios";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const query = new URL(req.url).searchParams.get("query");
 
   if (!query) {
-    return successResponse({
-      status: 400,
-      message: 'Query parameter "query" is required',
-    });
+    return NextResponse.json(
+      { message: 'Query parameter "query" is required' },
+      { status: 400 }
+    );
   }
 
   try {
@@ -26,16 +24,15 @@ export async function GET(req: NextRequest) {
       tvShows: TVResults.results,
     };
 
-    return successResponse({
-      status: 200,
-      message: "Search results fetched successfully",
-      body: combinedResults,
-    });
+    return NextResponse.json(
+      {
+        message: "Search results fetched successfully",
+        data: combinedResults,
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    return errorResponse({
-      status: 500,
-      message: "Server error",
-    });
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
 

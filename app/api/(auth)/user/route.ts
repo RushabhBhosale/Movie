@@ -1,6 +1,5 @@
 import { verifyToken } from "@/utils/generateToken";
-import { errorResponse, successResponse } from "@/utils/response";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 interface TokenPayload {
   id: string;
@@ -12,32 +11,32 @@ export async function GET(req: NextRequest) {
     const token: string | null = req.nextUrl.searchParams.get("token");
 
     if (!token) {
-      return errorResponse({
+      return NextResponse.json({
         status: 400,
-        message: "Token parameter is required",
+        message: "Token is required",
       });
     }
 
     const decoded: TokenPayload | null = verifyToken(token);
 
     if (!decoded) {
-      return errorResponse({
+      return NextResponse.json({
         status: 401,
-        message: "Invalid token",
+        message: "Invalid or expired token",
       });
     }
 
-    return successResponse({
+    return NextResponse.json({
       status: 200,
       message: "Token verified successfully",
-      body: {
+      data: {
         id: decoded.id,
         username: decoded.username,
       },
     });
   } catch (error) {
     console.error("Error verifying token:", error);
-    return errorResponse({
+    return NextResponse.json({
       status: 500,
       message: "Server error",
     });
