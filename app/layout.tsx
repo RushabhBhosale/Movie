@@ -50,10 +50,10 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${cinzel.variable} antialiased`}
+        className={`bg-muted_background ${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${cinzel.variable} antialiased`}
       >
         <main className="w-full">
-          <div>{children} </div>
+          <div>{children}</div>
           <Toaster />
         </main>
       </body>

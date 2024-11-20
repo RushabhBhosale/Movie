@@ -127,9 +127,16 @@ export interface MoviesListResponse {
   total_results: number;
 }
 
+export interface TMDBListResponse {
+  page: number;
+  results: Movie[];
+  total_pages: number;
+  total_results: number;
+}
+
 export interface TVListResponse {
   page: number;
-  results: TVShow[];
+  results: any;
   total_pages: number;
   total_results: number;
 }
