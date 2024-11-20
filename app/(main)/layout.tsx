@@ -10,25 +10,28 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ children }: MainLayoutProps) => {
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [isSidebarOpen, setSidebarOpen] = useState(true);
   return (
-    <main className="w-full">
-      <div className="mb-[64px]">
+    <main className="w-full relative">
+      <div className={cn("mb-[64px]", isSidebarOpen && "blur-md")}>
         <Navbar onSidebarToggle={() => setSidebarOpen((prev) => !prev)} />
       </div>
-      <div className="bg-back w-full min-h-[90.5vh]">
+
+      <div className="bg-back w-full">
         <div className="flex">
-          <div className="lg:w-[12%] fixed z-10 w-[180px]">
+          {/* Sidebar */}
+          <div className={cn("lg:w-[12%] fixed z-10 w-[180px]")}>
             <Sidebar
               isOpen={isSidebarOpen}
               onClose={() => setSidebarOpen(false)}
             />
           </div>
+
+          {/* Main content */}
           <div
             className={cn(
               "w-[100%] p-5 transition-all",
-              isSidebarOpen ? "lg:w-[88%]" : "lg:w-[100%]",
-              isSidebarOpen ? "lg:ml-[172px]" : ""
+              isSidebarOpen && "blur-md"
             )}
           >
             {children}
