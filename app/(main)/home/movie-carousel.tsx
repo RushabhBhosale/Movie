@@ -1,5 +1,5 @@
 import MovieCard from "@/components/movie-card";
-import { TVListResponse } from "@/types/tmdb";
+import { MTV, TVListResponse } from "@/types/tmdb";
 import React from "react";
 
 interface CardListProps {
@@ -14,7 +14,7 @@ const CardList = ({ list, title }: CardListProps) => {
       <div className="sm:mt-5 popular list overflow-x-auto">
         <div className="flex gap-5">
           {list &&
-            list.results.map((movie: any, index: number) => (
+            list.results.map((movie: MTV, index: number) => (
               <MovieCard movie={movie} key={index} />
             ))}
         </div>

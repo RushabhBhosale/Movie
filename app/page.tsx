@@ -17,7 +17,7 @@ import { CircleArrowRight, Menu, SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-const page = () => {
+const WelcomePage = () => {
   const [keywords, setKeywords] = useState([]);
   const [banner, setBanner] = useState([]);
   const router = useRouter();
@@ -119,4 +119,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default WelcomePage;

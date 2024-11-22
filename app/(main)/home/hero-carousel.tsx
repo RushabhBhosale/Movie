@@ -4,8 +4,8 @@ import "swiper/modules";
 import { Navigation, Pagination } from "swiper/modules";
 import Image from "next/image";
 import Link from "next/link";
-import { BookmarkIcon, Info, InfoIcon, PlayIcon } from "lucide-react";
-import { TVListResponse } from "@/types/tmdb";
+import { BookmarkIcon, PlayIcon } from "lucide-react";
+import { TVListResponse, TVShow, Movie, MTV } from "@/types/tmdb";
 import { Button } from "@/components/ui/button";
 
 interface HeroCarouselProps {
@@ -27,7 +27,7 @@ const HeroCarousel = ({ list }: HeroCarouselProps) => {
         className="mySwiper w-full h-[32rem] rounded-xl"
       >
         {list &&
-          list.results.map((movie: any, index: number) => (
+          list.results.map((movie: MTV, index: number) => (
             <SwiperSlide className="slides w-full relative" key={index}>
               <Image
                 alt="backdrop"
