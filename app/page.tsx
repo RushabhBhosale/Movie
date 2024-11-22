@@ -91,7 +91,7 @@ const page = () => {
                 placeholder="Search ..."
                 className="bg-foreground text-black"
               />
-              <Button variant="primary">
+              <Button variant="default">
                 <SearchIcon />
               </Button>
             </div>
@@ -106,7 +106,7 @@ const page = () => {
               </p>
             </div>
             <Button
-              variant="primary"
+              variant="default"
               className="font-medium px-5 mt-6 rounded-xl"
               onClick={() => router.push("home")}
             >

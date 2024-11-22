@@ -4,7 +4,7 @@ import "swiper/modules";
 import { Navigation, Pagination } from "swiper/modules";
 import Image from "next/image";
 import Link from "next/link";
-import { Info, PlayIcon } from "lucide-react";
+import { BookmarkIcon, Info, InfoIcon, PlayIcon } from "lucide-react";
 import { TVListResponse } from "@/types/tmdb";
 import { Button } from "@/components/ui/button";
 
@@ -72,24 +72,23 @@ const HeroCarousel = ({ list }: HeroCarouselProps) => {
                       movie.title ? `movie${movie.title}` : `tv${movie.name}`
                     }`}
                   >
-                    <Button
-                      variant="primary"
-                      className=" text-sm font-medium text-black"
-                    >
-                      <PlayIcon className="text-black size-5" />
-                      Watch Now
-                    </Button>
+                    <div className="my-7">
+                      <Button variant="default">
+                        <PlayIcon className="size-5" />
+                        Watch Now
+                      </Button>
+                    </div>
                   </Link>
                   <Link
                     href={`/detail/${movie.id}${
                       movie.title ? `movie${movie.title}` : `tv${movie.name}`
                     }`}
                   >
-                    <div className="my-7 flex gap-2 w-30 rounded-md text-gray-700 bg-white px-4 py-2">
-                      <Info className="size-5" />
-                      <button className=" text-sm font-medium text-black">
-                        More Info
-                      </button>
+                    <div className="my-7">
+                      <Button variant="secondary" className="rounded-full">
+                        <BookmarkIcon className="size-5" />
+                        Add to watchlist
+                      </Button>
                     </div>
                   </Link>
                 </div>

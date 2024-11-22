@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { authService } from "../services/auth.service";
-import axiosClient from "@/utils/axiosClient";
 
 interface AuthState {
   token: string | null;
@@ -16,52 +15,54 @@ interface AuthState {
 
 export const useAuthStore = create(
   persist<AuthState>(
-    (set) => ({
-      token: null, // Initialize token as null
+    (set, get) => ({
+      token: null,
       user: null,
       isLoading: false,
+
       login: async (data) => {
         set({ isLoading: true });
         try {
           const resp = await authService.login(data);
-          set({ token: resp.data.body.token, user: resp.data.body.user });
-        } finally {
+          set({
+            token: resp.data.data.token,
+            user: resp.data.data.user,
+            isLoading: false,
+          });
+        } catch (error) {
+          console.error("Login failed:", error);
           set({ isLoading: false });
         }
       },
+
       logout: () => {
-        set({ token: null, user: null });
-        localStorage.removeItem("auth-data");
+        set({ token: null, user: null, isLoading: false });
       },
-      setUser: (user) => set({ user }),
-      setToken: (token) => set({ token }),
+
+      setUser: (user) => set({ user, isLoading: false }),
+
+      setToken: (token) => set({ token, isLoading: false }),
 
       checkAuth: async () => {
-        const storedData = localStorage.getItem("auth-data");
-        if (storedData) {
+        set({ isLoading: true });
+        const { token } = get();
+        if (!token) {
+          set({ token: null, user: null, isLoading: false });
+        } else {
           try {
-            const { token } = JSON.parse(storedData);
-            if (token) {
-              set({ token });
-              const resp = await axiosClient.get("/user", token);
-
-              if (resp.data.success) {
-                let userData = await resp.data.json();
-                set({ user: userData });
-              } else {
-                throw new Error("Invalid token");
-              }
-            }
+            // Perform additional checks or fetch user data
+            // ...
+            set({ isLoading: false });
           } catch (error) {
-            console.error("Authentication check failed:", error);
-            set({ token: null, user: null }); // Clear invalid data
+            console.error("Failed to check auth:", error);
+            set({ token: null, user: null, isLoading: false });
           }
         }
       },
     }),
     {
       name: "auth-data", // Key in localStorage
-      storage: createJSONStorage(() => localStorage), // Use localStorage
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );

@@ -45,7 +45,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <div
       className={cn(
-        "bg-[#5b595cab] mt-1 w-[300px] h-[100vh] overflow-y-auto transition-transform fixed left-0 top-0 z-[100]",
+        "bg-[#5b595cab] mt-1 w-[250px] lg:w-[300px] h-[100vh] overflow-y-auto transition-transform fixed left-0 top-0 z-[100]",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}
     >
