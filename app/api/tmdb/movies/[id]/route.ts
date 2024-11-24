@@ -2,9 +2,9 @@ import { fetchMovieDetails } from "@/app/api/(services)/movie.service";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const movieId = req.url.split("/").pop(); // Extracts movieId from the URL path
+  const id = req.url.split("/").pop(); // Extracts id from the URL path
 
-  if (!movieId) {
+  if (!id) {
     return NextResponse.json(
       { message: "Movie ID is required" },
       { status: 400 }
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const movies = await fetchMovieDetails(Number(movieId));
+    const movies = await fetchMovieDetails(Number(id));
 
     // Return a successful response with movie details
     return NextResponse.json(

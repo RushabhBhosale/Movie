@@ -1,9 +1,9 @@
-interface Genre {
+export interface Genre {
   id: number;
   name: string;
 }
 
-interface ProductionCompany {
+export interface ProductionCompany {
   id: number;
   logo_path: string | null;
   name: string;
@@ -149,6 +149,9 @@ export interface MTV {
   production_countries: ProductionCountry[];
   seasons: Season[];
   vote_average: number;
+  runtime: number;
+  status: string;
+  release_date: string;
 }
 
 export interface MoviesListResponse {

@@ -53,3 +53,25 @@ body {
   width: 50px !important;
   transform: translateY(-40%);
 }
+
+/* Styling for vertical scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  background-color: rgba(54, 54, 54, 0);
+  border-radius: 4px;
+  height: 15px;
+  visibility: hidden;
+}
+
+::-webkit-scrollbar-thumb {
+  width: 7px;
+  height: auto;
+  visibility: hidden;
+  border-radius: 4px;
+  background-color: rgba(190, 190, 190, 0.201);
+}
+
+::-webkit-scrollbar:hover,
+::-webkit-scrollbar-thumb:hover {
+  visibility: visible;
+}

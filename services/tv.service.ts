@@ -8,8 +8,10 @@ export const tvService = {
   getTrendingTv: () => axiosClient.get("tmdb/tv/trending"),
   getLatestTv: () => axiosClient.get("tmdb/tv/latest"),
   getRecommendedTv: (tvId: number) =>
-    axiosClient.get(`tmdb/tv/${tvId}/recommendations`),
+    axiosClient.get(`tmdb/tv/recommended/${tvId}`),
   getSimilarTv: (tvId: number) => axiosClient.get(`tmdb/tv/${tvId}/similar`),
   getTvDetails: (tvId: number) => axiosClient.get(`tmdb/tv/${tvId}`),
   getTvReviews: (tvId: number) => axiosClient.get(`tmdb/tv/${tvId}/reviews`),
+  getTvCredits: (tvId: number) => axiosClient.get(`tmdb/tv/${tvId}/credits`),
+  getTvVideos: (tvId: number) => axiosClient.get(`tmdb/tv/${tvId}/videos`),
 };

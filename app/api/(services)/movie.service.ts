@@ -58,3 +58,17 @@ export const fetchReviews = async (
   const { data } = await tmdbClient.get(`movie/${movieId}/reviews`);
   return data;
 };
+
+export const fetchCredits = async (
+  movieId: number
+): Promise<ReviewListResponse> => {
+  const { data } = await tmdbClient.get(`movie/${movieId}/credits`);
+  return data;
+};
+
+export const fetchVideos = async (
+  movieId: number
+): Promise<ReviewListResponse> => {
+  const { data } = await tmdbClient.get(`movie/${movieId}/videos`);
+  return data;
+};

@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const tvDetails = await fetchTrendingTV();
+    const data = await fetchTrendingTV();
     return NextResponse.json(
       {
         message: "Trending TV shows fetched successfully",
-        data: tvDetails,
+        data,
       },
       { status: 200 }
     );

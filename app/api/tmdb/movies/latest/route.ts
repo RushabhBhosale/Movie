@@ -4,16 +4,13 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   try {
     // Fetch the latest movies
-    const tvDetails = await fetchLatestMovies();
+    const data = await fetchLatestMovies();
 
     // Return a success response with the fetched movie details
-    return NextResponse.json(
-      {
-        message: "Latest movies fetched successfully",
-        data: tvDetails,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      data,
+      status: 200,
+    });
   } catch (error) {
     console.error("Error fetching latest movies details:", error);
 

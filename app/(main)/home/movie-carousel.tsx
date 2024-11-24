@@ -11,7 +11,7 @@ const CardList = ({ list, title }: CardListProps) => {
   return (
     <>
       <p className="text-2xl my-2 sm:mt-6 font-bold">{title}</p>
-      <div className="sm:mt-5 popular list overflow-x-auto">
+      <div className="sm:mt-5 popular list overflow-x-auto scrollbar-hide">
         <div className="flex gap-5">
           {list &&
             list.results.map((movie: MTV, index: number) => (

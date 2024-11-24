@@ -72,3 +72,19 @@ export const fetchTVReviews = async (
   const { data } = await tmdbClient.get(`tv/${tvId}/reviews`);
   return data;
 };
+
+// Fetch credits for a specific TV show by ID
+export const fetchTVCredits = async (
+  tvId: number
+): Promise<ReviewListResponse> => {
+  const { data } = await tmdbClient.get(`tv/${tvId}/credits`);
+  return data;
+};
+
+// Fetch videos for a specific TV show by ID
+export const fetchTVVideos = async (
+  tvId: number
+): Promise<ReviewListResponse> => {
+  const { data } = await tmdbClient.get(`tv/${tvId}/videos`);
+  return data;
+};

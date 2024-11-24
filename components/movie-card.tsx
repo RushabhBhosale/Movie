@@ -1,20 +1,26 @@
 import Link from "next/link";
-import { Movie, TVShow } from "../types/tmdb";
+import { Movie, MTV, TVShow } from "../types/tmdb";
 import { StarIcon } from "lucide-react";
 
 type MovieCardProps = {
-  movie: Movie | TVShow;
+  movie: MTV;
 };
 
 const MovieCard = ({ movie }: MovieCardProps) => {
   const isMovie = (item: Movie | TVShow): item is Movie => "title" in item;
+  console.log(
+    "Link",
+    `/details/${isMovie(movie) ? `movie/${movie.title}` : `tv/${movie.name}`}/${
+      movie.id
+    }`
+  );
 
   return (
     <div className="relative flex-shrink-0 overflow-hidden mb-2">
       <Link
-        href={`/detail/${movie.id}${
-          isMovie(movie) ? `movie${movie.title}` : `tv${movie.name}`
-        }`}
+        href={`/details/${
+          isMovie(movie) ? `movie/${movie.title}` : `tv/${movie.name}`
+        }/${movie.id}`}
       >
         <img
           className="sm:rounded-3xl rounded-md w-25 sm:w-52 h-40 sm:h-72 object-cover cursor-pointer"

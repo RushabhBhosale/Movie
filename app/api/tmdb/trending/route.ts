@@ -4,16 +4,12 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const tvDetails = await fetchTrendingKeywords();
-    console.log("TV Details", tvDetails);
+    const data = await fetchTrendingKeywords();
 
-    return NextResponse.json(
-      {
-        message: "Latest Trending fetched successfully",
-        data: tvDetails,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      data,
+      status: 200,
+    });
   } catch (error) {
     console.error("Error fetching latest trending details:", error);
 

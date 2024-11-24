@@ -18,4 +18,8 @@ export const movieService = {
     axiosClient.get(`tmdb/search/movie`, {
       params: { query },
     }),
+  getRecommendedCredits: (movieId: number) =>
+    axiosClient.get(`tmdb/movies/${movieId}/credits`),
+  getRecommendedVideos: (movieId: number) =>
+    axiosClient.get(`tmdb/movies/${movieId}/videos`),
 };
