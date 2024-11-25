@@ -9,14 +9,11 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const tvDetails = await fetchTVDetails(Number(tvId));
-    return NextResponse.json(
-      {
-        message: "TV Show Details fetched successfully",
-        data: tvDetails,
-      },
-      { status: 200 }
-    );
+    const data = await fetchTVDetails(Number(tvId));
+    return NextResponse.json({
+      data,
+      status: 200,
+    });
   } catch (error) {
     console.error("Error fetching TV details:", error);
     return NextResponse.json({ message: "Server error" }, { status: 500 });

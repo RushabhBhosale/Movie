@@ -28,7 +28,7 @@ const Navbar = ({ onSidebarToggle }: NavbarProps) => {
     setIsLoading(false);
   }, 200); // Simulating loading state for demonstration
   return (
-    <nav className="bg-background p-3 fixed top-0 w-full z-[2]">
+    <nav className="bg-background p-3 fixed top-0 w-full z-[999]">
       <div className="flex items-center justify-between">
         {/* Sidebar Toggle */}
         <div className="flex items-center gap-5">
