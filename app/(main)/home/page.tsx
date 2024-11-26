@@ -22,7 +22,6 @@ const Home = () => {
     try {
       const movies = await movieService.getTopRatedMovies();
       setMovies(movies.data.data);
-      console.log("Top Rated Movies:", movies);
     } catch (error) {
       console.error("Error fetching top-rated movies:", error);
     }
@@ -33,30 +32,28 @@ const Home = () => {
     getTopRatedMovies();
   }, []);
   return (
-    <div>
-      <div>
-        <HeroCarousel
-          list={
-            tvShows || {
-              page: 1,
-              results: [],
-              total_pages: 1,
-              total_results: 0,
-            }
+    <div className="p-5">
+      <HeroCarousel
+        list={
+          tvShows || {
+            page: 1,
+            results: [],
+            total_pages: 1,
+            total_results: 0,
           }
-        />
-        <CardList
-          title="Top Rated Tv Shows"
-          list={
-            tvShows || {
-              page: 1,
-              results: [],
-              total_pages: 1,
-              total_results: 0,
-            }
+        }
+      />
+      <CardList
+        title="Top Rated Tv Shows"
+        list={
+          tvShows || {
+            page: 1,
+            results: [],
+            total_pages: 1,
+            total_results: 0,
           }
-        />
-      </div>
+        }
+      />
     </div>
   );
 };

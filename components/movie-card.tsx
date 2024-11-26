@@ -8,20 +8,10 @@ type MovieCardProps = {
 
 const MovieCard = ({ movie }: MovieCardProps) => {
   const isMovie = (item: Movie | TVShow): item is Movie => "title" in item;
-  console.log(
-    "Link",
-    `/details/${isMovie(movie) ? `movie/${movie.title}` : `tv/${movie.name}`}/${
-      movie.id
-    }`
-  );
 
   return (
     <div className="relative flex-shrink-0 overflow-hidden mb-2">
-      <Link
-        href={`/details/${
-          isMovie(movie) ? `movie/${movie.title}` : `tv/${movie.name}`
-        }/${movie.id}`}
-      >
+      <Link href={`/details/${isMovie(movie) ? `movie` : `tv`}/${movie.id}`}>
         <img
           className="sm:rounded-3xl rounded-md w-25 sm:w-52 h-40 sm:h-72 object-cover cursor-pointer"
           src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}

@@ -152,6 +152,8 @@ export interface MTV {
   runtime: number;
   status: string;
   release_date: string;
+  budget: number;
+  revenue: number;
 }
 
 export interface MoviesListResponse {
@@ -195,4 +197,32 @@ export interface ReviewListResponse {
   results: Review[]; // Array of Review objects
   total_pages: number;
   total_results: number;
+}
+
+export interface CastMember {
+  adult: boolean;
+  gender: number; // 1: Female, 2: Male, 0 or null: Not specified
+  id: number;
+  known_for_department: string; // e.g., "Acting"
+  name: string; // Display name
+  original_name: string; // Original name
+  popularity: number; // Popularity score
+  profile_path: string | null; // Profile image path
+  character: string; // Character name
+  credit_id: string; // Unique credit identifier
+  order: number; // Order in the cast list
+}
+
+export interface CrewMember {
+  adult: boolean;
+  gender: number; // 1: Female, 2: Male, 0 or null: Not specified
+  id: number;
+  known_for_department: string; // e.g., "Production"
+  name: string; // Display name
+  original_name: string; // Original name
+  popularity: number; // Popularity score
+  profile_path: string | null; // Profile image path
+  credit_id: string; // Unique credit identifier
+  department: string; // Department name (e.g., "Production")
+  job: string; // Job title (e.g., "Executive Producer")
 }

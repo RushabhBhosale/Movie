@@ -1,13 +1,12 @@
-import { movieService } from "@/services/movie.service";
-import MainHeader from "../main-header";
+import Hero from "../hero";
 
 const DetailPage = async ({ params }: any) => {
   const slug = (await params).slug;
   const [type, id] = slug || [];
 
   return (
-    <div>
-      <MainHeader type={type} id={id} />
+    <div className="lg:p-5">
+      <Hero type={type} id={id} />
     </div>
   );
 };

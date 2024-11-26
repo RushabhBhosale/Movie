@@ -36,7 +36,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <main className="w-full relative">
-      <div className={cn("mb-[64px]", isSidebarOpen && "blur-md")}>
+      <div className={cn("mb-[70px]", isSidebarOpen && "blur-md")}>
         <Navbar onSidebarToggle={() => setSidebarOpen((prev) => !prev)} />
       </div>
 
@@ -56,7 +56,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           {/* Main content */}
           <div
             className={cn(
-              "w-[100%] p-5 transition-all",
+              "w-[100%] transition-all",
               isSidebarOpen && "blur-md"
             )}
           >
