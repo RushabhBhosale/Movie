@@ -82,30 +82,10 @@ const Hero = ({ type, id }: HeroProps) => {
     setRecommendations(res.data.data || []);
   };
 
-  console.log(crew, cast);
-
   return (
-    <div className="relative">
-      {/* Backdrop with gradient overlay */}
-      <div className="relative w-full lg:h-[500px] md:h-[600px] h-[700px] lg:rounded-3xl overflow-hidden">
-        {details?.backdrop_path ? (
-          <Image
-            src={`${process.env.NEXT_PUBLIC_TMDB_BASE_IMAGE_URL}/${details.backdrop_path}`}
-            alt={details?.title || details?.name || "Backdrop"}
-            fill
-            className="object-cover"
-          />
-        ) : (
-          <div className="w-full h-full bg-gray-800 flex items-center justify-center text-white">
-            No Backdrop Available
-          </div>
-        )}
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/90 to-black"></div>
-      </div>
-
+    <div className="w-full p-6 space-y-6 bg-black lg:rounded-3xl">
       {/* Poster and details */}
-      <div className="absolute inset-0 flex flex-col lg:flex-row items-center p-6 gap-6">
+      <div className="flex flex-col lg:flex-row items-center gap-6">
         {/* Poster */}
         <div className="w-full h-[350px] md:h-[250px] lg:w-[350px] lg:h-[450px] shrink-0 rounded-lg overflow-hidden relative shadow-lg">
           {details?.poster_path ? (
@@ -144,14 +124,85 @@ const Hero = ({ type, id }: HeroProps) => {
               ""
             )}
           </div>
-          <div className="flex gap-3 text-muted-foreground">
+          {/* Genre */}
+          <div className=" flex flex-wrap gap-x-1 text-muted-foreground">
             {details?.genres?.map((genre: Genre) => (
               <span key={genre.id}>{genre.name}</span>
             ))}
           </div>
+          {/* Seasons & Episodes */}
+          {type === "tv" && (
+            <div className="flex gap-4 my-4">
+              <div className="flex gap-1">
+                <span className="text-muted-foreground font-medium">
+                  Seasons:
+                </span>
+                <span>{details?.number_of_seasons}</span>
+              </div>
+              <div className="flex gap-1">
+                <span className="text-muted-foreground font-medium">
+                  Episodes:
+                </span>
+                <span>{details?.number_of_episodes}</span>
+              </div>
+            </div>
+          )}
+          {/* Status */}
+          <div className="flex gap-4 my-4">
+            <div className="flex gap-1">
+              <span className="text-muted-foreground font-medium">Status:</span>
+              <span>{details?.status}</span>
+            </div>
+          </div>
+          {/* Overview */}
           <p className="mt-3 text-lg font-medium">
-            {details?.overview || "No description available."}
+            {details?.overview && details?.overview.length > 200
+              ? `${details?.overview.slice(0, 200)}...`
+              : details?.overview || "No description available."}
           </p>
+          {/* Created By */}
+          {details?.created_by && details.created_by.length > 0 && (
+            <div className="flex gap-4 my-4 font-medium">
+              <div className="flex gap-1">
+                <span className="text-muted-foreground font-medium">
+                  Created By:
+                </span>
+                {details.created_by.map((author: any, index: number) => (
+                  <span key={index}>{author.name}</span>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Cast */}
+          <div className="flex flex-wrap my-4 font-medium">
+            <div className="text-muted-foreground mr-2 shrink-0">Starring:</div>
+            <div className="flex flex-wrap gap-x-1">
+              {cast.slice(0, 6).map((actor: CastMember, index: number) => (
+                <div key={actor.id} className="shrink-0">
+                  {actor.name}
+                  {index < cast.slice(0, 6).length - 1 && `,`}
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Production */}
+          <div className="flex flex-wrap my-4 font-medium">
+            <div className="text-muted-foreground mr-2 shrink-0">
+              Production:
+            </div>
+            <div className="flex flex-wrap gap-x-1">
+              {details?.production_companies
+                ?.slice(0, 4)
+                ?.map((prod: ProductionCompany, index: number) => (
+                  <div key={prod.id} className="shrink-0">
+                    {prod.name}
+                    {index <
+                      details?.production_companies.slice(0, 4).length - 1 &&
+                      `,`}
+                  </div>
+                ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
