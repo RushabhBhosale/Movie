@@ -14,4 +14,5 @@ export const tvService = {
   getTvReviews: (tvId: number) => axiosClient.get(`tmdb/tv/${tvId}/reviews`),
   getTvCredits: (tvId: number) => axiosClient.get(`tmdb/tv/${tvId}/credits`),
   getTvVideos: (tvId: number) => axiosClient.get(`tmdb/tv/${tvId}/videos`),
+  getTvImages: (tvId: number) => axiosClient.get(`tmdb/tv/${tvId}/images`),
 };

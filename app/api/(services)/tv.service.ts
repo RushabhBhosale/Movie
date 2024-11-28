@@ -88,3 +88,11 @@ export const fetchTVVideos = async (
   const { data } = await tmdbClient.get(`tv/${tvId}/videos`);
   return data;
 };
+
+// Fetch images for a specific TV show by ID
+export const fetchTVImages = async (
+  tvId: number
+): Promise<ReviewListResponse> => {
+  const { data } = await tmdbClient.get(`tv/${tvId}/images`);
+  return data;
+};

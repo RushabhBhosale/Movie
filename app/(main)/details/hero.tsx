@@ -1,6 +1,6 @@
 "use client";
 
-import MovieCard from "@/components/movie-card";
+import { Button } from "@/components/ui/button";
 import { movieService } from "@/services/movie.service";
 import { tvService } from "@/services/tv.service";
 import {
@@ -10,9 +10,10 @@ import {
   MTV,
   ProductionCompany,
 } from "@/types/tmdb";
-import { StarIcon } from "lucide-react";
+import { PlayIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { useMediaQuery } from "usehooks-ts";
 
 interface HeroProps {
   type: string;
@@ -24,63 +25,58 @@ const Hero = ({ type, id }: HeroProps) => {
   const [cast, setCast] = useState<CastMember[]>([]);
   const [crew, setCrew] = useState<CrewMember[]>([]);
   const [videos, setVideos] = useState<any[]>([]);
+  const [images, setImages] = useState<any[]>([]);
   const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [slice, setSlice] = useState<number>(200);
+  const [selectedVideo, setSelectedVideo] = useState(null);
 
   useEffect(() => {
-    if (type === "movie") {
-      fetchMovieDetails();
-      fetchMovieCredits();
-      fetchMovieVideos();
-      fetchMovieRecommendations();
-    } else if (type === "tv") {
-      fetchTvDetails();
-      fetchTvCredits();
-      fetchTvVideos();
-      fetchTvRecommendations();
-    }
+    const fetchData = async () => {
+      if (type === "movie") {
+        const [
+          detailsRes,
+          creditsRes,
+          videosRes,
+          imagesRes,
+          recommendationsRes,
+        ] = await Promise.all([
+          movieService.getMovieDetails(id),
+          movieService.getMovieCredits(id),
+          movieService.getMovieVideos(id),
+          movieService.getMovieImages(id),
+          movieService.getRecommendedMovies(id),
+        ]);
+        setDetails(detailsRes.data.data || {});
+        setCrew(creditsRes.data.data.crew || []);
+        setCast(creditsRes.data.data.cast || []);
+        setVideos(videosRes.data.data.results || []);
+        setImages(imagesRes.data.data.posters || []);
+        setRecommendations(recommendationsRes.data.data || []);
+      } else if (type === "tv") {
+        const [
+          detailsRes,
+          creditsRes,
+          videosRes,
+          imagesRes,
+          recommendationsRes,
+        ] = await Promise.all([
+          tvService.getTvDetails(id),
+          tvService.getTvCredits(id),
+          tvService.getTvVideos(id),
+          tvService.getTvImages(id),
+          tvService.getRecommendedTv(id),
+        ]);
+        setDetails(detailsRes.data.data || {});
+        setCrew(creditsRes.data.data.crew || []);
+        setCast(creditsRes.data.data.cast || []);
+        setVideos(videosRes.data.data.results || []);
+        setImages(imagesRes.data.data.posters || []);
+        setRecommendations(recommendationsRes.data.data || []);
+      }
+    };
+
+    fetchData();
   }, [type, id]);
-
-  const fetchMovieDetails = async () => {
-    const res = await movieService.getMovieDetails(id);
-    setDetails(res.data.data || {});
-  };
-
-  const fetchTvDetails = async () => {
-    const res = await tvService.getTvDetails(id);
-    setDetails(res.data.data || {});
-  };
-
-  const fetchMovieCredits = async () => {
-    const res = await movieService.getMovieCredits(id);
-    setCrew(res.data.data.crew || []);
-    setCast(res.data.data.cast || []);
-  };
-
-  const fetchTvCredits = async () => {
-    const res = await tvService.getTvCredits(id);
-    setCrew(res.data.data.crew || []);
-    setCast(res.data.data.cast || []);
-  };
-
-  const fetchMovieVideos = async () => {
-    const res = await movieService.getMovieVideos(id);
-    setVideos(res.data.data || []);
-  };
-
-  const fetchTvVideos = async () => {
-    const res = await tvService.getTvVideos(id);
-    setVideos(res.data.data || []);
-  };
-
-  const fetchMovieRecommendations = async () => {
-    const res = await movieService.getRecommendedMovies(id);
-    setRecommendations(res.data.data || []);
-  };
-
-  const fetchTvRecommendations = async () => {
-    const res = await tvService.getRecommendedTv(id);
-    setRecommendations(res.data.data || []);
-  };
 
   return (
     <div className="w-full p-6 space-y-6 bg-black lg:rounded-3xl">
@@ -104,7 +100,7 @@ const Hero = ({ type, id }: HeroProps) => {
 
         {/* Movie Details */}
         <div className="text-white">
-          <h2 className="text-3xl md:text-5xl font-bold">
+          <h2 className="text-3xl md:text-4xl  font-bold">
             {details?.title || details?.name || "No Title"}
           </h2>
           <div className="flex text-lg my-3 text-muted-foreground gap-5">
@@ -125,7 +121,7 @@ const Hero = ({ type, id }: HeroProps) => {
             )}
           </div>
           {/* Genre */}
-          <div className=" flex flex-wrap gap-x-1 text-muted-foreground">
+          <div className=" flex flex-wrap gap-x-3 text-muted-foreground">
             {details?.genres?.map((genre: Genre) => (
               <span key={genre.id}>{genre.name}</span>
             ))}
@@ -156,19 +152,34 @@ const Hero = ({ type, id }: HeroProps) => {
           </div>
           {/* Overview */}
           <p className="mt-3 text-lg font-medium">
-            {details?.overview && details?.overview.length > 200
-              ? `${details?.overview.slice(0, 200)}...`
+            {details?.overview &&
+            details?.overview.length > 200 &&
+            slice < details?.overview.length
+              ? `${details?.overview.slice(0, slice)}...`
               : details?.overview || "No description available."}
+
+            {details?.overview && details?.overview.length > 200 && (
+              <Button
+                variant="ghost"
+                className="text-muted-foreground bg-muted size-5 text-xl ml-2"
+                onClick={() => setSlice(slice === 99999 ? 200 : 99999)}
+              >
+                {slice === 99999 ? "-" : "+"}
+              </Button>
+            )}
           </p>
           {/* Created By */}
           {details?.created_by && details.created_by.length > 0 && (
             <div className="flex gap-4 my-4 font-medium">
-              <div className="flex gap-1">
-                <span className="text-muted-foreground font-medium">
+              <div className="flex flex-wrap gap-1">
+                <span className="text-muted-foreground font-medium shrink-0">
                   Created By:
                 </span>
                 {details.created_by.map((author: any, index: number) => (
-                  <span key={index}>{author.name}</span>
+                  <span key={index}>
+                    {author.name}
+                    {index < details.created_by.length - 1 && `,`}
+                  </span>
                 ))}
               </div>
             </div>
@@ -201,6 +212,74 @@ const Hero = ({ type, id }: HeroProps) => {
                       `,`}
                   </div>
                 ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Trailers */}
+      <div className="lg:flex gap-10">
+        <div>
+          <h3 className="text-2xl font-bold text-white">Trailers</h3>
+          {/* Video Gallery Thumbnails */}
+          <div className="flex gap-4 overflow-x-auto">
+            {videos.slice(0, 2).map((video: any) => (
+              <div
+                key={video.id}
+                className="w-[200px] h-[150px] relative group rounded-lg overflow-hidden shadow-md cursor-pointer"
+                onClick={() => setSelectedVideo(video.key)}
+              >
+                <img
+                  src={`https://img.youtube.com/vi/${video.key}/hqdefault.jpg`}
+                  alt={video.name || "Trailer"}
+                  className="object-cover w-full h-full"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <PlayIcon className="w-10 h-10 text-white" />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {selectedVideo && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+              <div className="relative w-full max-w-3xl">
+                <button
+                  className="absolute top-4 right-4 text-white text-2xl"
+                  onClick={() => setSelectedVideo(null)}
+                >
+                  ✕
+                </button>
+                <iframe
+                  src={`https://www.youtube.com/embed/${selectedVideo}`}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-[400px] rounded-lg shadow-lg"
+                ></iframe>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="overflow-x-auto">
+          <h3 className="text-2xl font-bold text-white">Images</h3>
+          <div className="sm:mt-5 list overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2">
+              {images.map((image: any) => (
+                <div
+                  key={image.file_path}
+                  className="w-[200px] h-[110px] relative flex-shrink-0 rounded-sm overflow-hidden"
+                >
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_TMDB_BASE_IMAGE_URL}/${image.file_path}`}
+                    alt="Image"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover shrink-0 hover:scale-110 transition-transform hover:object-contain"
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>

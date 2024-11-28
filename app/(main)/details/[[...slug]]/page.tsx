@@ -5,8 +5,10 @@ const DetailPage = async ({ params }: any) => {
   const [type, id] = slug || [];
 
   return (
-    <div className="lg:p-5">
-      <Hero type={type} id={id} />
+    <div className="bg-black">
+      <div className="lg:max-w-7xl mx-auto">
+        <Hero type={type} id={id} />
+      </div>
     </div>
   );
 };

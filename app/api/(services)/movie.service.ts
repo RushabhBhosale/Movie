@@ -72,3 +72,10 @@ export const fetchVideos = async (
   const { data } = await tmdbClient.get(`movie/${movieId}/videos`);
   return data;
 };
+
+export const fetchImages = async (
+  movieId: number
+): Promise<ReviewListResponse> => {
+  const { data } = await tmdbClient.get(`movie/${movieId}/images`);
+  return data;
+};

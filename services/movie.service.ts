@@ -22,4 +22,6 @@ export const movieService = {
     axiosClient.get(`tmdb/movies/${movieId}/credits`),
   getMovieVideos: (movieId: number) =>
     axiosClient.get(`tmdb/movies/${movieId}/videos`),
+  getMovieImages: (movieId: number) =>
+    axiosClient.get(`tmdb/movies/${movieId}/images`),
 };
