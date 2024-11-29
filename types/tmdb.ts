@@ -124,7 +124,7 @@ export interface MTV {
   title: string;
   adult: boolean;
   backdrop_path: string;
-  created_by: string[];
+  created_by: any;
   episode_run_time: number[];
   first_air_date: string;
   genres: Genre[];
