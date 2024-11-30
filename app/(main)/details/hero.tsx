@@ -9,11 +9,15 @@ import {
   Genre,
   MTV,
   ProductionCompany,
+  TVListResponse,
 } from "@/types/tmdb";
 import { Clock10Icon, PlayIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
+import React, { useEffect, useState } from "react";
+import { DetailsSkeleton } from "./hero-skeletons";
+import ReviewCard from "./review-card";
+import CardList from "../home/movie-carousel";
 
 interface HeroProps {
   type: string;
@@ -25,31 +29,42 @@ const Hero = ({ type, id }: HeroProps) => {
   const [cast, setCast] = useState<CastMember[]>([]);
   const [videos, setVideos] = useState<any[]>([]);
   const [images, setImages] = useState<any[]>([]);
-  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [recommendations, setRecommendations] = useState<TVListResponse[]>([]);
   const [slice, setSlice] = useState<number>(200);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [topRated, setTopRated] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const isTab = useMediaQuery("(max-width: 1300px)");
 
   useEffect(() => {
     const fetchData = async () => {
       if (type === "movie") {
+        setLoading(true);
         const [
           detailsRes,
           creditsRes,
           videosRes,
           imagesRes,
           recommendationsRes,
+          reviewsRes,
+          topRatedRes,
         ] = await Promise.all([
           movieService.getMovieDetails(id),
           movieService.getMovieCredits(id),
           movieService.getMovieVideos(id),
           movieService.getMovieImages(id),
           movieService.getRecommendedMovies(id),
+          movieService.getMovieReviews(id),
+          movieService.getTopRatedMovies(),
         ]);
         setDetails(detailsRes.data.data || {});
         setCast(creditsRes.data.data.cast || []);
         setVideos(videosRes.data.data.results || []);
         setImages(imagesRes.data.data.posters || []);
         setRecommendations(recommendationsRes.data.data || []);
+        setReviews(reviewsRes.data.data.results || []);
+        setTopRated(topRatedRes.data.data.results || []);
       } else if (type === "tv") {
         const [
           detailsRes,
@@ -57,28 +72,41 @@ const Hero = ({ type, id }: HeroProps) => {
           videosRes,
           imagesRes,
           recommendationsRes,
+          reviewsRes,
+          topRatedRes,
         ] = await Promise.all([
           tvService.getTvDetails(id),
           tvService.getTvCredits(id),
           tvService.getTvVideos(id),
           tvService.getTvImages(id),
           tvService.getRecommendedTv(id),
+          tvService.getTvReviews(id),
+          tvService.getTopRatedTv(),
         ]);
         setDetails(detailsRes.data.data || {});
         setCast(creditsRes.data.data.cast || []);
         setVideos(videosRes.data.data.results || []);
         setImages(imagesRes.data.data.posters || []);
         setRecommendations(recommendationsRes.data.data || []);
+        setReviews(reviewsRes.data.data.results || []);
+        setTopRated(topRatedRes.data.data.results || []);
       }
     };
 
     fetchData();
+    setLoading(false);
   }, [type, id]);
 
+  if (loading) {
+    return <DetailsSkeleton />;
+  }
+
+  console.log(recommendations);
+
   return (
-    <div className="bg-black">
+    <div className="bg-black p-6">
       <div>
-        <div className="max-w-7xl mx-auto p-6 space-y-6">
+        <div className="max-w-7xl mx-auto space-y-6">
           {/* Poster and details */}
           <div className="flex flex-col lg:flex-row items-center gap-6">
             {/* Poster */}
@@ -88,6 +116,7 @@ const Hero = ({ type, id }: HeroProps) => {
                   src={`${process.env.NEXT_PUBLIC_TMDB_BASE_IMAGE_URL}/${details.poster_path}`}
                   alt={details?.title || "Poster"}
                   fill
+                  sizes="100"
                   className="object-cover"
                 />
               ) : (
@@ -225,13 +254,16 @@ const Hero = ({ type, id }: HeroProps) => {
         </div>
       </div>
 
-      <div className="flex gap-4 max-w-7xl mx-auto mt-4">
+      <div className={`lg:flex gap-4 max-w-7xl mx-auto mt-6 md:px-6 lg:px-0 `}>
         {/* Main Card */}
         <div className="w-full lg:w-8/12">
           {type === "tv" && (
             <>
-              <div className="lg:flex gap-4">
-                <div className="bg-muted rounded-lg shadow-lg w-[90%] mx-auto lg:w-4/6 p-6 flex flex-col gap-4">
+              <h3 className="text-2xl font-bold text-white mb-4">
+                Seasons & Episodes
+              </h3>
+              <div className="lg:flex lg:flex-row gap-4 md:p-0  flex flex-col-reverse">
+                <div className="bg-muted rounded-lg shadow-lg lg:w-4/6 p-6 flex flex-col gap-4">
                   {/* Title and Air Date */}
                   <div>
                     <h2 className="text-2xl font-bold truncate">
@@ -284,7 +316,7 @@ const Hero = ({ type, id }: HeroProps) => {
                     </div>
                   </div>
                 </div>
-                <div className="bg-muted rounded-lg shadow-lg w-2/6 p-4 flex flex-col gap-4">
+                <div className="bg-muted rounded-lg shadow-lg lg:w-2/6 p-4 flex flex-col gap-4">
                   {/* Seasons and Episodes */}
                   <div>
                     <h3 className="text-lg font-bold">Details</h3>
@@ -325,53 +357,149 @@ const Hero = ({ type, id }: HeroProps) => {
             </>
           )}
 
-          <div className="lg:flex gap-10 my-4">
-            <div>
-              <h3 className="text-2xl font-bold text-white">Trailers</h3>
-              {/* Video Gallery Thumbnails */}
-              <div className="flex gap-4 overflow-x-auto">
-                {videos.slice(0, 4).map((video: any) => (
-                  <div
-                    key={video.id}
-                    className="w-[200px] h-[150px] relative group rounded-lg overflow-hidden shadow-md cursor-pointer"
-                    onClick={() => setSelectedVideo(video.key)}
-                  >
-                    <img
-                      src={`https://img.youtube.com/vi/${video.key}/hqdefault.jpg`}
-                      alt={video.name || "Trailer"}
-                      className="object-cover w-full h-full"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <PlayIcon className="w-10 h-10 text-white" />
-                    </div>
-                  </div>
+          {/* Reviews */}
+          {reviews.length > 0 && (
+            <div className="my-4">
+              <h3 className="text-2xl font-bold text-white mb-4">Reviews</h3>
+              <div className="overflow-x-auto flex gap-4">
+                {reviews.slice(0.4).map((review: any, index: number) => (
+                  <ReviewCard
+                    key={index}
+                    author={review.author}
+                    authorDetails={{
+                      name: review.author,
+                      avatarPath: review.author_details.avatar_path,
+                      rating: review.author_details.rating,
+                    }}
+                    content={
+                      review.content.length > 150
+                        ? `${review.content.slice(0, 150)}...`
+                        : review.content
+                    }
+                    createdAt={review.created_at}
+                  />
                 ))}
               </div>
+            </div>
+          )}
 
-              {selectedVideo && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-                  <div className="relative w-full max-w-3xl">
-                    <button
-                      className="absolute top-4 right-4 text-white text-2xl"
-                      onClick={() => setSelectedVideo(null)}
+          {/* Trailers */}
+          {videos.length > 0 && (
+            <div className="lg:flex gap-10 my-4">
+              <div>
+                <h3 className="text-2xl font-bold text-white">Trailers</h3>
+                <div className="flex gap-4 overflow-x-auto">
+                  {videos.slice(0, isTab ? 3 : 4).map((video: any) => (
+                    <div
+                      key={video.id}
+                      className="w-[200px] h-[150px] relative rounded-lg overflow-hidden shadow-md cursor-pointer flex-none"
+                      onClick={() => setSelectedVideo(video.key)}
                     >
-                      ✕
-                    </button>
-                    <iframe
-                      src={`https://www.youtube.com/embed/${selectedVideo}`}
-                      title="YouTube video player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="w-full h-[400px] rounded-lg shadow-lg"
-                    ></iframe>
+                      <Image
+                        src={`https://img.youtube.com/vi/${video.key}/hqdefault.jpg`}
+                        alt={video.name || "Trailer"}
+                        fill
+                        sizes="200px" // Ensures correct sizing for the image
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <PlayIcon className="w-10 h-10 text-white" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {selectedVideo && (
+                  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+                    <div className="relative w-full max-w-3xl">
+                      <button
+                        className="absolute top-4 right-4 text-white text-2xl"
+                        onClick={() => setSelectedVideo(null)}
+                      >
+                        ✕
+                      </button>
+                      <iframe
+                        src={`https://www.youtube.com/embed/${selectedVideo}`}
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="w-full h-[400px] rounded-lg shadow-lg"
+                      ></iframe>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Cast */}
+          <div>
+            <h3 className="text-2xl font-bold text-white mt-4">Top Cast</h3>
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide">
+              {cast.map((cast: any) => (
+                <div
+                  key={cast.id}
+                  className="flex items-center gap-2 shrink-0 my-4 bg-muted p-4 rounded-sm"
+                >
+                  <div className="relative size-20 shrink-0">
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_TMDB_BASE_IMAGE_URL}/${cast.profile_path}`}
+                      alt={cast.name}
+                      fill
+                      sizes="100"
+                      className="object-cover rounded-full shrink-0"
+                    />
+                  </div>
+                  <div className="text-muted-foreground ">
+                    <p className="font-bold">{cast.name}</p>
+                    <p className="text-sm my-1">{cast.character}</p>
                   </div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
+
+          {/* Recommended Movies */}
+          {recommendations && (
+            <CardList
+              title={`Recommended ${type === "tv" ? "TV Shows" : "Movies"}`}
+              list={recommendations}
+            />
+          )}
         </div>
-        <div className="w-full lg:w-4/12 rounded-md bg-muted h-20"></div>
+
+        {/* Right Panel */}
+        <div className={`w-full lg:w-4/12 rounded-md bg-muted p-4 z-10`}>
+          <h3 className="text-2xl font-bold text-white mb-4">Most Popular</h3>
+          {topRated.slice(0, 10).map((topRated: MTV, index: number) => (
+            <div key={index} className="flex gap-3 my-4">
+              <div className="relative w-16 h-20">
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_TMDB_BASE_IMAGE_URL}/${topRated.poster_path}`}
+                  alt={topRated.name || topRated.title}
+                  fill
+                  sizes="100"
+                  className="rounded-md"
+                />
+              </div>
+              <div className="text-muted-foreground">
+                <p className="font-bold">{topRated.name || topRated.title}</p>
+                <p className="text-sm my-1">
+                  {topRated.first_air_date
+                    ? new Date(topRated.first_air_date).getFullYear()
+                    : new Date(topRated.release_date).getFullYear()}
+                </p>
+                <div className="text-sm flex items-center gap-4">
+                  <div className="flex items-center gap-1">
+                    <StarIcon className="text-yellow-600 size-4" />{" "}
+                    {topRated.vote_average.toFixed(1)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
