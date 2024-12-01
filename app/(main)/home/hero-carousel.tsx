@@ -5,14 +5,15 @@ import { Navigation, Pagination } from "swiper/modules";
 import Image from "next/image";
 import Link from "next/link";
 import { BookmarkIcon, PlayIcon } from "lucide-react";
-import { TVListResponse, TVShow, Movie, MTV } from "@/types/tmdb";
+import { TVShow, Movie, MTV } from "@/types/tmdb";
 import { Button } from "@/components/ui/button";
 
 interface HeroCarouselProps {
-  list: TVListResponse;
+  list: MTV[];
 }
 
 const HeroCarousel = ({ list }: HeroCarouselProps) => {
+  const isMovie = (item: Movie | TVShow): item is Movie => "title" in item;
   return (
     <div>
       <Swiper
@@ -27,7 +28,7 @@ const HeroCarousel = ({ list }: HeroCarouselProps) => {
         className="mySwiper w-full h-[32rem] rounded-xl"
       >
         {list &&
-          list.results.map((movie: MTV, index: number) => (
+          list.map((movie: MTV, index: number) => (
             <SwiperSlide className="slides w-full relative" key={index}>
               <Image
                 alt="backdrop"
@@ -68,8 +69,8 @@ const HeroCarousel = ({ list }: HeroCarouselProps) => {
                 </div>
                 <div className="flex gap-7">
                   <Link
-                    href={`/detail/${movie.id}${
-                      movie.title ? `movie${movie.title}` : `tv${movie.name}`
+                    href={`/details/${isMovie(movie) ? `movie` : `tv`}/${
+                      movie.id
                     }`}
                   >
                     <div className="my-7">

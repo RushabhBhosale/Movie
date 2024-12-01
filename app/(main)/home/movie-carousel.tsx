@@ -14,7 +14,7 @@ const CardList = ({ list, title }: CardListProps) => {
       <div className="sm:mt-5 popular list overflow-x-auto scrollbar-hide">
         <div className="flex gap-5">
           {list &&
-            list?.results?.map((movie: MTV, index: number) => (
+            list?.map((movie: MTV, index: number) => (
               <MovieCard movie={movie} key={index} />
             ))}
         </div>

@@ -7,12 +7,12 @@ import CardList from "./movie-carousel";
 import { movieService } from "@/services/movie.service";
 
 const Home = () => {
-  const [tvShows, setTvShows] = useState();
+  const [tvShows, setTvShows] = useState([]);
   const [movies, setMovies] = useState();
   const getTopRatedTvShows = async () => {
     try {
       const tvShows = await tvService.getTopRatedTv();
-      setTvShows(tvShows.data.data);
+      setTvShows(tvShows.data.data.results);
     } catch (error) {
       console.error("Error fetching top-rated TV shows:", error);
     }
@@ -33,27 +33,8 @@ const Home = () => {
   }, []);
   return (
     <div className="p-5">
-      <HeroCarousel
-        list={
-          tvShows || {
-            page: 1,
-            results: [],
-            total_pages: 1,
-            total_results: 0,
-          }
-        }
-      />
-      <CardList
-        title="Top Rated Tv Shows"
-        list={
-          tvShows || {
-            page: 1,
-            results: [],
-            total_pages: 1,
-            total_results: 0,
-          }
-        }
-      />
+      <HeroCarousel list={tvShows} />
+      <CardList title="Top Rated Tv Shows" list={tvShows} />
     </div>
   );
 };

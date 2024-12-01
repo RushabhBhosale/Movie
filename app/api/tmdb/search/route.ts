@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
 
     const data = {
       movies: movieResults.results,
-      tvShows: TVResults.results,
+      tv: TVResults.results,
     };
 
     return NextResponse.json({

@@ -1,37 +1,36 @@
+import { Review } from "@/types/tmdb";
 import { StarIcon } from "lucide-react";
-
-interface ReviewProps {
-  author: string;
-  authorDetails: {
-    name: string;
-    avatarPath: string;
-    rating: number;
-  };
-  content: string;
-  createdAt: string;
-}
+import Image from "next/image";
 
 export default function ReviewCard({
   author,
-  authorDetails,
+  author_details,
   content,
-  createdAt,
-}: ReviewProps) {
+  created_at,
+}: Review) {
   return (
     <div className="bg-muted rounded-lg shadow p-4  w-[250px] lg:w-1/3 shrink-0">
       {/* Header */}
       <div className="flex items-center gap-4 mb-3">
-        <div className="w-12 h-12 rounded-full bg-gray-300 overflow-hidden">
-          <img
-            src={`https://image.tmdb.org/t/p/w500${authorDetails.avatarPath}`}
-            alt={author}
-            className="w-full h-full object-cover"
-          />
+        <div className="w-12 h-12 relative rounded-full bg-gray-300 overflow-hidden">
+          {author_details.avatar_path ? (
+            <Image
+              src={`https://image.tmdb.org/t/p/w500${author_details.avatar_path}`}
+              alt="author"
+              fill
+              sizes="100"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-white flex items-center justify-center">
+              <span className="text text-black">N/A</span>
+            </div>
+          )}
         </div>
         <div>
           <h3 className="text-sm font-bold text-foreground">{author}</h3>
           <p className="text-xs text-muted-foreground">
-            {new Date(createdAt).toLocaleDateString()}
+            {new Date(created_at).toLocaleDateString()}
           </p>
         </div>
       </div>
@@ -45,7 +44,7 @@ export default function ReviewCard({
       <div className="flex items-center gap-2 mt-3">
         <StarIcon className="w-5 h-5 text-yellow-500" />
         <span className="text-sm font-bold">
-          {authorDetails.rating ? authorDetails.rating.toFixed(1) : "N/A"}
+          {author_details.rating ? author_details.rating.toFixed(1) : "N/A"}
         </span>
       </div>
     </div>

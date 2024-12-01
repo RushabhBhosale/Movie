@@ -1,15 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { movieService } from "@/services/movie.service";
-import { tvService } from "@/services/tv.service";
 import {
   CastMember,
-  CrewMember,
   Genre,
+  Movie,
   MTV,
   ProductionCompany,
-  TVListResponse,
+  TVShow,
 } from "@/types/tmdb";
 import { Clock10Icon, PlayIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
@@ -18,90 +16,64 @@ import React, { useEffect, useState } from "react";
 import { DetailsSkeleton } from "./hero-skeletons";
 import ReviewCard from "./review-card";
 import CardList from "../home/movie-carousel";
+import Link from "next/link";
+import { useTMDBStore } from "@/store/useMovieStore";
 
 interface HeroProps {
-  type: string;
+  type: "movie" | "tv";
   id: number;
 }
 
 const Hero = ({ type, id }: HeroProps) => {
-  const [details, setDetails] = useState<MTV>();
-  const [cast, setCast] = useState<CastMember[]>([]);
-  const [videos, setVideos] = useState<any[]>([]);
-  const [images, setImages] = useState<any[]>([]);
-  const [recommendations, setRecommendations] = useState<TVListResponse[]>([]);
   const [slice, setSlice] = useState<number>(200);
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const [topRated, setTopRated] = useState<any[]>([]);
-  const [reviews, setReviews] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const isTab = useMediaQuery("(max-width: 1300px)");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (type === "movie") {
-        setLoading(true);
-        const [
-          detailsRes,
-          creditsRes,
-          videosRes,
-          imagesRes,
-          recommendationsRes,
-          reviewsRes,
-          topRatedRes,
-        ] = await Promise.all([
-          movieService.getMovieDetails(id),
-          movieService.getMovieCredits(id),
-          movieService.getMovieVideos(id),
-          movieService.getMovieImages(id),
-          movieService.getRecommendedMovies(id),
-          movieService.getMovieReviews(id),
-          movieService.getTopRatedMovies(),
-        ]);
-        setDetails(detailsRes.data.data || {});
-        setCast(creditsRes.data.data.cast || []);
-        setVideos(videosRes.data.data.results || []);
-        setImages(imagesRes.data.data.posters || []);
-        setRecommendations(recommendationsRes.data.data || []);
-        setReviews(reviewsRes.data.data.results || []);
-        setTopRated(topRatedRes.data.data.results || []);
-      } else if (type === "tv") {
-        const [
-          detailsRes,
-          creditsRes,
-          videosRes,
-          imagesRes,
-          recommendationsRes,
-          reviewsRes,
-          topRatedRes,
-        ] = await Promise.all([
-          tvService.getTvDetails(id),
-          tvService.getTvCredits(id),
-          tvService.getTvVideos(id),
-          tvService.getTvImages(id),
-          tvService.getRecommendedTv(id),
-          tvService.getTvReviews(id),
-          tvService.getTopRatedTv(),
-        ]);
-        setDetails(detailsRes.data.data || {});
-        setCast(creditsRes.data.data.cast || []);
-        setVideos(videosRes.data.data.results || []);
-        setImages(imagesRes.data.data.posters || []);
-        setRecommendations(recommendationsRes.data.data || []);
-        setReviews(reviewsRes.data.data.results || []);
-        setTopRated(topRatedRes.data.data.results || []);
-      }
-    };
+  const {
+    isLoading,
+    movies,
+    fetchDetails,
+    fetchTrending,
+    fetchTopRated,
+    fetchCredits,
+    fetchVideos,
+    fetchImages,
+    fetchRecommendations,
+    fetchReviews,
+    fetchSimilar,
+  } = useTMDBStore();
 
-    fetchData();
-    setLoading(false);
+  useEffect(() => {
+    if (type && id) {
+      fetchTrending(type);
+      fetchTopRated(type);
+      fetchDetails(type, id);
+      fetchCredits(type, id);
+      fetchVideos(type, id);
+      fetchImages(type, id);
+      fetchRecommendations(type, id);
+      fetchReviews(type, id);
+      fetchSimilar(type, id);
+    }
   }, [type, id]);
 
-  if (loading) {
+  const {
+    details,
+    trending,
+    cast,
+    videos,
+    images,
+    recommendations,
+    topRated,
+    reviews,
+    similar,
+  } = movies;
+
+  const isMovie = (item: Movie | TVShow): item is Movie => "title" in item;
+
+  if (isLoading || !details) {
     return <DetailsSkeleton />;
   }
-
-  console.log(recommendations);
 
   return (
     <div className="bg-black p-6">
@@ -113,7 +85,7 @@ const Hero = ({ type, id }: HeroProps) => {
             <div className="w-full h-[350px] md:h-[250px] lg:w-[350px] lg:h-[450px] shrink-0 rounded-lg overflow-hidden relative shadow-lg">
               {details?.poster_path ? (
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_TMDB_BASE_IMAGE_URL}/${details.poster_path}`}
+                  src={`${process.env.NEXT_PUBLIC_TMDB_BASE_IMAGE_URL}/${details?.poster_path}`}
                   alt={details?.title || "Poster"}
                   fill
                   sizes="100"
@@ -134,7 +106,7 @@ const Hero = ({ type, id }: HeroProps) => {
               <div className="flex text-lg my-3 text-muted-foreground gap-5">
                 <div className="flex items-center gap-1">
                   <StarIcon className="size-4 text-yellow-500" />
-                  {details?.vote_average.toFixed(1)}
+                  {details?.vote_average?.toFixed(1)}
                 </div>
                 <div>{details?.episode_run_time || details?.runtime}m</div>
                 <div>
@@ -202,16 +174,16 @@ const Hero = ({ type, id }: HeroProps) => {
                 )}
               </p>
               {/* Created By */}
-              {details?.created_by && details.created_by.length > 0 && (
+              {details?.created_by && details?.created_by.length > 0 && (
                 <div className="flex gap-4 my-4 font-medium">
                   <div className="flex flex-wrap gap-1">
                     <span className="text-muted-foreground font-medium shrink-0">
                       Created By:
                     </span>
-                    {details.created_by.map((author: any, index: number) => (
+                    {details?.created_by.map((author: any, index: number) => (
                       <span key={index}>
                         {author.name}
-                        {index < details.created_by.length - 1 && `,`}
+                        {index < details?.created_by.length - 1 && `,`}
                       </span>
                     ))}
                   </div>
@@ -223,7 +195,7 @@ const Hero = ({ type, id }: HeroProps) => {
                   Starring:
                 </div>
                 <div className="flex flex-wrap gap-x-1">
-                  {cast.slice(0, 6).map((actor: CastMember, index: number) => (
+                  {cast?.slice(0, 6).map((actor: CastMember, index: number) => (
                     <div key={actor.id} className="shrink-0">
                       {actor.name}
                       {index < cast.slice(0, 6).length - 1 && `,`}
@@ -257,7 +229,7 @@ const Hero = ({ type, id }: HeroProps) => {
       <div className={`lg:flex gap-4 max-w-7xl mx-auto mt-6 md:px-6 lg:px-0 `}>
         {/* Main Card */}
         <div className="w-full lg:w-8/12">
-          {type === "tv" && (
+          {type === "tv" && details?.last_episode_to_air?.name && (
             <>
               <h3 className="text-2xl font-bold text-white mb-4">
                 Seasons & Episodes
@@ -274,7 +246,7 @@ const Hero = ({ type, id }: HeroProps) => {
                       Aired on{" "}
                       {details?.last_episode_to_air?.air_date
                         ? new Date(
-                            details.last_episode_to_air.air_date
+                            details?.last_episode_to_air.air_date
                           ).toDateString()
                         : "Date not available"}
                     </p>
@@ -294,7 +266,7 @@ const Hero = ({ type, id }: HeroProps) => {
                       </span>
                       <span>
                         {details?.last_episode_to_air?.vote_average
-                          ? details.last_episode_to_air.vote_average.toFixed(1)
+                          ? details?.last_episode_to_air.vote_average.toFixed(1)
                           : "N/A"}
                       </span>
                     </div>
@@ -358,7 +330,7 @@ const Hero = ({ type, id }: HeroProps) => {
           )}
 
           {/* Reviews */}
-          {reviews.length > 0 && (
+          {reviews?.length > 0 && (
             <div className="my-4">
               <h3 className="text-2xl font-bold text-white mb-4">Reviews</h3>
               <div className="overflow-x-auto flex gap-4">
@@ -366,17 +338,17 @@ const Hero = ({ type, id }: HeroProps) => {
                   <ReviewCard
                     key={index}
                     author={review.author}
-                    authorDetails={{
+                    author_details={{
                       name: review.author,
-                      avatarPath: review.author_details.avatar_path,
-                      rating: review.author_details.rating,
+                      avatar_path: review.author_details?.avatar_path,
+                      rating: review.author_details?.rating,
                     }}
                     content={
                       review.content.length > 150
                         ? `${review.content.slice(0, 150)}...`
                         : review.content
                     }
-                    createdAt={review.created_at}
+                    created_at={review.created_at}
                   />
                 ))}
               </div>
@@ -384,7 +356,7 @@ const Hero = ({ type, id }: HeroProps) => {
           )}
 
           {/* Trailers */}
-          {videos.length > 0 && (
+          {videos?.length > 0 && (
             <div className="lg:flex gap-10 my-4">
               <div>
                 <h3 className="text-2xl font-bold text-white">Trailers</h3>
@@ -434,71 +406,126 @@ const Hero = ({ type, id }: HeroProps) => {
           )}
 
           {/* Cast */}
-          <div>
-            <h3 className="text-2xl font-bold text-white mt-4">Top Cast</h3>
-            <div className="flex gap-4 overflow-x-auto scrollbar-hide">
-              {cast.map((cast: any) => (
-                <div
-                  key={cast.id}
-                  className="flex items-center gap-2 shrink-0 my-4 bg-muted p-4 rounded-sm"
-                >
-                  <div className="relative size-20 shrink-0">
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_TMDB_BASE_IMAGE_URL}/${cast.profile_path}`}
-                      alt={cast.name}
-                      fill
-                      sizes="100"
-                      className="object-cover rounded-full shrink-0"
-                    />
+          {cast?.length > 0 && (
+            <div>
+              <h3 className="text-2xl font-bold text-white mt-4">Top Cast</h3>
+              <div className="flex gap-4 overflow-x-auto scrollbar-hide">
+                {cast?.map((cast: any) => (
+                  <div
+                    key={cast.id}
+                    className="flex items-center gap-2 shrink-0 my-4 bg-muted p-4 rounded-sm"
+                  >
+                    <div className="relative size-20 shrink-0">
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_TMDB_BASE_IMAGE_URL}/${cast.profile_path}`}
+                        alt={cast.name}
+                        fill
+                        sizes="100"
+                        className="object-cover rounded-full shrink-0"
+                      />
+                    </div>
+                    <div className="text-muted-foreground ">
+                      <p className="font-bold">{cast.name}</p>
+                      <p className="text-sm my-1">{cast.character}</p>
+                    </div>
                   </div>
-                  <div className="text-muted-foreground ">
-                    <p className="font-bold">{cast.name}</p>
-                    <p className="text-sm my-1">{cast.character}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Recommended Movies */}
-          {recommendations && (
-            <CardList
-              title={`Recommended ${type === "tv" ? "TV Shows" : "Movies"}`}
-              list={recommendations}
-            />
+          {recommendations?.length > 0 && (
+            <div className="mb-4">
+              <CardList
+                title={`Recommended ${type === "tv" ? "TV Shows" : "Movies"}`}
+                list={recommendations}
+              />
+            </div>
+          )}
+
+          {/* Similar Movies */}
+          {recommendations?.length < 1 && similar?.results.length > 0 && (
+            <div className="mb-4">
+              <CardList
+                title={`Similar ${type === "tv" ? "TV Shows" : "Movies"}`}
+                list={similar}
+              />
+            </div>
           )}
         </div>
 
         {/* Right Panel */}
-        <div className={`w-full lg:w-4/12 rounded-md bg-muted p-4 z-10`}>
-          <h3 className="text-2xl font-bold text-white mb-4">Most Popular</h3>
-          {topRated.slice(0, 10).map((topRated: MTV, index: number) => (
-            <div key={index} className="flex gap-3 my-4">
-              <div className="relative w-16 h-20">
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_TMDB_BASE_IMAGE_URL}/${topRated.poster_path}`}
-                  alt={topRated.name || topRated.title}
-                  fill
-                  sizes="100"
-                  className="rounded-md"
-                />
-              </div>
-              <div className="text-muted-foreground">
-                <p className="font-bold">{topRated.name || topRated.title}</p>
-                <p className="text-sm my-1">
-                  {topRated.first_air_date
-                    ? new Date(topRated.first_air_date).getFullYear()
-                    : new Date(topRated.release_date).getFullYear()}
-                </p>
-                <div className="text-sm flex items-center gap-4">
-                  <div className="flex items-center gap-1">
-                    <StarIcon className="text-yellow-600 size-4" />{" "}
-                    {topRated.vote_average.toFixed(1)}
+        <div className={`w-full lg:w-4/12 z-10`}>
+          <div className="bg-muted rounded-md p-4 mb-4">
+            <h3 className="text-2xl font-bold text-white mb-4">Trending Now</h3>
+            {trending?.slice(0, 5)?.map((trending: MTV, index: number) => (
+              <Link
+                key={index}
+                href={`/details/${isMovie(trending) ? `movie` : `tv`}/${
+                  trending.id
+                }`}
+              >
+                <div className="flex gap-3 my-4">
+                  <div className="relative w-16 h-20">
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_TMDB_BASE_IMAGE_URL}/${trending.poster_path}`}
+                      alt={trending.name || trending.title}
+                      fill
+                      sizes="100"
+                      className="rounded-md"
+                    />
+                  </div>
+                  <div className="text-muted-foreground">
+                    <p className="font-bold">
+                      {trending.name || trending.title}
+                    </p>
+                    <p className="text-sm my-1">
+                      {trending.first_air_date
+                        ? new Date(trending.first_air_date).getFullYear()
+                        : new Date(trending.release_date).getFullYear()}
+                    </p>
+                    <div className="text-sm flex items-center gap-4">
+                      <div className="flex items-center gap-1">
+                        <StarIcon className="text-yellow-600 size-4" />{" "}
+                        {trending.vote_average.toFixed(1)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className="bg-muted rounded-md p-4">
+            <h3 className="text-2xl font-bold text-white mb-4">Most Popular</h3>
+            {topRated?.slice(0, 10).map((topRated: MTV, index: number) => (
+              <div key={index} className="flex gap-3 my-4">
+                <div className="relative w-16 h-20">
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_TMDB_BASE_IMAGE_URL}/${topRated.poster_path}`}
+                    alt={topRated.name || topRated.title}
+                    fill
+                    sizes="100"
+                    className="rounded-md"
+                  />
+                </div>
+                <div className="text-muted-foreground">
+                  <p className="font-bold">{topRated.name || topRated.title}</p>
+                  <p className="text-sm my-1">
+                    {topRated.first_air_date
+                      ? new Date(topRated.first_air_date).getFullYear()
+                      : new Date(topRated.release_date).getFullYear()}
+                  </p>
+                  <div className="text-sm flex items-center gap-4">
+                    <div className="flex items-center gap-1">
+                      <StarIcon className="text-yellow-600 size-4" />{" "}
+                      {topRated.vote_average.toFixed(1)}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
